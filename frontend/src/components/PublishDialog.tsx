@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, Copy, ExternalLink, Globe, Loader2 } from "lucide-react";
+import { Copy, ExternalLink, Globe } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { StepList } from "@/components/StepList";
 import { useApp } from "@/lib/store";
 import { toast } from "sonner";
 
@@ -27,7 +28,7 @@ export function PublishDialog({
   publicUrl: string;
   /** In-app route that serves the public page, e.g. /portfolio/andikaputraputu */
   publicPath: string;
-}) {
+}): React.ReactElement {
   const { update } = useApp();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
@@ -79,39 +80,7 @@ export function PublishDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <ul className="space-y-3.5 rounded-xl border border-border bg-muted/40 p-5" data-testid="publish-steps">
-          {STEPS.map((label, i) => {
-            const complete = step > i;
-            const active = step === i;
-            return (
-              <li
-                key={label}
-                data-testid={`publish-step-${i}`}
-                data-state={complete ? "done" : active ? "active" : "pending"}
-                className={`flex items-center gap-3 text-[13.5px] transition-colors duration-300 ${
-                  complete || active ? "text-foreground" : "text-muted-foreground/50"
-                }`}
-              >
-                <span
-                  className={`grid h-5.5 w-5.5 shrink-0 place-items-center rounded-full border transition-colors duration-300 ${
-                    complete
-                      ? "border-[var(--success)] bg-[var(--success)]/12 text-[var(--success)]"
-                      : active
-                        ? "border-primary text-primary"
-                        : "border-border"
-                  }`}
-                >
-                  {complete ? (
-                    <Check className="h-3 w-3" />
-                  ) : active ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : null}
-                </span>
-                <span>{label}</span>
-              </li>
-            );
-          })}
-        </ul>
+        <StepList steps={STEPS} current={step} testId="publish-steps" idPrefix="publish-step" />
 
         {done && (
           <div className="space-y-4" data-testid="publish-success">

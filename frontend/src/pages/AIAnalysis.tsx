@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const STEP_MS = 900;
 
-export default function AIAnalysis() {
+export default function AIAnalysis(): React.ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
   const { state, update } = useApp();

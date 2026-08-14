@@ -15,7 +15,7 @@ import { REPOS } from "@/lib/mock";
 import { useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-export default function Repositories() {
+export default function Repositories(): React.ReactElement {
   const { state } = useApp();
   const navigate = useNavigate();
   const [modal, setModal] = useState(false);

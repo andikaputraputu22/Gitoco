@@ -91,17 +91,19 @@ function caption(ctx: Ctx, label: string, x: number, y: number, render: boolean)
   return 3.4;
 }
 
-function paragraph(
-  ctx: Ctx,
-  text: string,
-  x: number,
-  y: number,
-  w: number,
-  size: number,
-  color: string,
-  render: boolean,
-  lead = 1.42,
-): number {
+interface TextOpts {
+  text: string;
+  x: number;
+  y: number;
+  w: number;
+  size: number;
+  color: string;
+  render: boolean;
+  lead?: number;
+}
+
+function paragraph(ctx: Ctx, o: TextOpts): number {
+  const { text, x, y, w, size, color, render, lead = 1.42 } = o;
   const { doc, body } = ctx;
   doc.setFont(body, "normal");
   doc.setFontSize(size);
@@ -114,16 +116,18 @@ function paragraph(
   return lines.length * lh;
 }
 
-function bullets(
-  ctx: Ctx,
-  items: string[],
-  x: number,
-  y: number,
-  w: number,
-  size: number,
-  color: string,
-  render: boolean,
-): number {
+interface BulletOpts {
+  items: string[];
+  x: number;
+  y: number;
+  w: number;
+  size: number;
+  color: string;
+  render: boolean;
+}
+
+function bullets(ctx: Ctx, o: BulletOpts): number {
+  const { items, x, y, w, size, color, render } = o;
   const { doc, body } = ctx;
   doc.setFont(body, "normal");
   doc.setFontSize(size);
@@ -142,18 +146,23 @@ function bullets(
 }
 
 /** Wrapped pill row — Professional's skill chips and Modern's stack chips. */
-function pills(
-  ctx: Ctx,
-  items: string[],
-  x: number,
-  y: number,
-  maxW: number,
-  opts: { bg: string; ink: string; mono?: boolean; size?: number },
-  render: boolean,
-): number {
+interface PillOpts {
+  items: string[];
+  x: number;
+  y: number;
+  maxW: number;
+  bg: string;
+  ink: string;
+  mono?: boolean;
+  size?: number;
+  render: boolean;
+}
+
+function pills(ctx: Ctx, o: PillOpts): number {
+  const { items, x, y, maxW, render } = o;
   const { doc, body } = ctx;
-  const size = opts.size ?? 8;
-  doc.setFont(opts.mono ? MONO : body, "normal");
+  const size = o.size ?? 8;
+  doc.setFont(o.mono ? MONO : body, "normal");
   doc.setFontSize(size);
   const padX = 2.4;
   const h = 5.4;
@@ -167,9 +176,9 @@ function pills(
       cy += h + gap;
     }
     if (render) {
-      fillColor(doc, opts.bg);
+      fillColor(doc, o.bg);
       doc.roundedRect(cx, cy - h + 1.6, w, h, 1.4, 1.4, "F");
-      textColor(doc, opts.ink);
+      textColor(doc, o.ink);
       doc.text(item, cx + padX, cy);
     }
     cx += w + gap;
@@ -181,14 +190,15 @@ function pills(
  * One project block, measured and drawn through the same code path so a measured
  * height is always the height drawn. Layout follows the selected template.
  */
-function projectBlock(
-  ctx: Ctx,
-  data: PortfolioData,
-  p: PortfolioProject,
-  index: number,
-  startY: number,
-  render: boolean,
-): number {
+interface BlockOpts {
+  project: PortfolioProject;
+  index: number;
+  startY: number;
+  render: boolean;
+}
+
+function projectBlock(ctx: Ctx, o: BlockOpts): number {
+  const { project: p, index, startY, render } = o;
   const { doc, cfg, body } = ctx;
   const k = cfg.tokens;
   const panel = k.surface !== null && cfg.id !== "minimal";
@@ -228,21 +238,21 @@ function projectBlock(
   }
   y += titleLines.length * (titleSize * 0.3528 * 1.24) + 1.8;
 
-  y += paragraph(ctx, p.blurb, x, y, w, 9.6, k.body, render);
+  y += paragraph(ctx, { text: p.blurb, x, y, w, size: 9.6, color: k.body, render });
   y += 2.6;
 
   // Professional is the only template that lists key features
   if (k.showFeatures && p.features.length) {
     y += caption(ctx, cfg.labels.features, x, y, render);
     y += 1;
-    y += bullets(ctx, p.features, x, y, w, 9, k.faint, render);
+    y += bullets(ctx, { items: p.features, x, y, w, size: 9, color: k.faint, render });
     y += 2.4;
   }
 
   if (p.highlights.length) {
     y += caption(ctx, cfg.labels.highlights, x, y, render);
     y += 1;
-    y += bullets(ctx, p.highlights, x, y, w, 9, k.faint, render);
+    y += bullets(ctx, { items: p.highlights, x, y, w, size: 9, color: k.faint, render });
     y += 2.4;
   }
 
@@ -253,7 +263,7 @@ function projectBlock(
       doc.line(x, y - 1.4, x + w, y - 1.4);
     }
     y += 3;
-    y += pills(ctx, p.tech, x, y, w, { bg: "#F1F5F9", ink: k.body, mono: true, size: 7.6 }, render);
+    y += pills(ctx, { items: p.tech, x, y, maxW: w, bg: "#F1F5F9", ink: k.body, mono: true, size: 7.6, render });
   } else {
     doc.setFont(MONO, "normal");
     doc.setFontSize(8);
@@ -268,6 +278,130 @@ function projectBlock(
 
   y += panel ? 6 : 0;
   return y - startY;
+}
+
+/** Modern: dark hero band with accent label, name, merged title+summary, chips. */
+function modernHeader(ctx: Ctx, data: PortfolioData): number {
+  const { doc, cfg } = ctx;
+  const k = cfg.tokens;
+  let y = M.top;
+
+  doc.setFont(MONO, "normal");
+  doc.setFontSize(7.6);
+  textColor(doc, k.accent);
+  doc.setCharSpace(0.6);
+  doc.text("AVAILABLE FOR HIRE", M.left, y);
+  doc.setCharSpace(0);
+  y += 10;
+
+  doc.setFont(ctx.body, "bold");
+  textColor(doc, k.ink);
+  fitText(doc, data.name, CONTENT_W, 28, 15);
+  doc.text(data.name, M.left, y);
+  y += 9;
+
+  y += paragraph(ctx, {
+    text: heroLine(data),
+    x: M.left,
+    y,
+    w: CONTENT_W - 8,
+    size: 10.4,
+    color: k.body,
+    render: true,
+    lead: 1.5,
+  });
+  y += 5;
+  y += pills(ctx, {
+    items: data.skills,
+    x: M.left,
+    y,
+    maxW: CONTENT_W,
+    bg: k.pillBg!,
+    ink: k.pillInk!,
+    mono: true,
+    size: 7.6,
+    render: true,
+  });
+  return y + 10;
+}
+
+/** Professional: white header band with optional avatar, name, title, meta row. */
+function professionalHeader(ctx: Ctx, data: PortfolioData, avatar: string | null): number {
+  const { doc, cfg } = ctx;
+  const k = cfg.tokens;
+
+  fillColor(doc, k.surface!);
+  doc.rect(0, 0, PAGE.w, 44, "F");
+  drawColor(doc, k.rule);
+  doc.line(0, 44, PAGE.w, 44);
+
+  // avatar sits to the left of the name block, as in the preview
+  let textX = M.left;
+  if (avatar) {
+    const photo = 22;
+    try {
+      doc.addImage(avatar, "PNG", M.left, 11, photo, photo);
+      textX = M.left + photo + 6;
+    } catch {
+      textX = M.left;
+    }
+  }
+  const headW = PAGE.w - M.right - textX;
+
+  doc.setFont(ctx.body, "bold");
+  textColor(doc, k.ink);
+  fitText(doc, data.name, headW, 20, 13);
+  doc.text(data.name, textX, 20);
+
+  doc.setFont(ctx.body, "normal");
+  doc.setFontSize(11);
+  textColor(doc, k.accent);
+  doc.text(data.title, textX, 28);
+
+  doc.setFont(MONO, "normal");
+  textColor(doc, k.faint);
+  const meta = `${data.location}    ${data.email}    ${data.handle}`;
+  fitText(doc, meta, headW, 8);
+  doc.text(meta, textX, 35.5);
+  return 56;
+}
+
+/** Minimal: editorial location caption, large serif name, title, rule. */
+function minimalHeader(ctx: Ctx, data: PortfolioData): number {
+  const { doc, cfg } = ctx;
+  const k = cfg.tokens;
+  let y = M.top;
+
+  doc.setFont(MONO, "normal");
+  doc.setFontSize(7.6);
+  textColor(doc, k.faint);
+  doc.setCharSpace(0.6);
+  doc.text(data.location.toUpperCase(), M.left, y);
+  doc.setCharSpace(0);
+  y += 10;
+
+  doc.setFont(ctx.body, "bold");
+  textColor(doc, k.ink);
+  fitText(doc, data.name, CONTENT_W, 26, 14);
+  doc.text(data.name, M.left, y);
+  y += 8;
+
+  doc.setFont(ctx.body, "normal");
+  doc.setFontSize(12);
+  textColor(doc, k.muted);
+  doc.text(data.title, M.left, y);
+  y += 7;
+
+  drawColor(doc, k.rule);
+  doc.line(M.left, y, PAGE.w - M.right, y);
+  return y + 8;
+}
+
+/** Dispatches to the selected template's header and returns the new cursor. */
+function drawHeader(ctx: Ctx, data: PortfolioData, avatar: string | null): number {
+  if (ctx.cfg.id === "modern") return modernHeader(ctx, data);
+  if (ctx.cfg.id === "professional") return professionalHeader(ctx, data, avatar);
+  return minimalHeader(ctx, data);
 }
 
 export interface PdfOptions {
@@ -301,90 +435,8 @@ export function generatePortfolioPdf(data: PortfolioData, opts: PdfOptions = {})
   };
   paintPage();
 
-  let y = M.top;
-
   // ---------------- Header (per template identity) ----------------
-  if (cfg.id === "modern") {
-    doc.setFont(MONO, "normal");
-    doc.setFontSize(7.6);
-    textColor(doc, k.accent);
-    doc.setCharSpace(0.6);
-    doc.text("AVAILABLE FOR HIRE", M.left, y);
-    doc.setCharSpace(0);
-    y += 10;
-    doc.setFont(ctx.body, "bold");
-    textColor(doc, k.ink);
-    fitText(doc, data.name, CONTENT_W, 28, 15);
-    doc.text(data.name, M.left, y);
-    y += 9;
-    y += paragraph(ctx, heroLine(data), M.left, y, CONTENT_W - 8, 10.4, k.body, true, 1.5);
-    y += 5;
-    y += pills(
-      ctx,
-      data.skills,
-      M.left,
-      y,
-      CONTENT_W,
-      { bg: k.pillBg!, ink: k.pillInk!, mono: true, size: 7.6 },
-      true,
-    );
-    y += 10;
-  } else if (cfg.id === "professional") {
-    // white header band with a bottom rule, mirroring the preview
-    fillColor(doc, k.surface!);
-    doc.rect(0, 0, PAGE.w, 44, "F");
-    drawColor(doc, k.rule);
-    doc.line(0, 44, PAGE.w, 44);
-
-    // avatar sits to the left of the name block, as in the preview
-    let textX = M.left;
-    if (opts.avatar) {
-      const photo = 22;
-      try {
-        doc.addImage(opts.avatar, "PNG", M.left, 11, photo, photo);
-        textX = M.left + photo + 6;
-      } catch {
-        textX = M.left;
-      }
-    }
-    const headW = PAGE.w - M.right - textX;
-
-    doc.setFont(ctx.body, "bold");
-    textColor(doc, k.ink);
-    fitText(doc, data.name, headW, 20, 13);
-    doc.text(data.name, textX, 20);
-    doc.setFont(ctx.body, "normal");
-    doc.setFontSize(11);
-    textColor(doc, k.accent);
-    doc.text(data.title, textX, 28);
-    doc.setFont(MONO, "normal");
-    textColor(doc, k.faint);
-    const meta = `${data.location}    ${data.email}    ${data.handle}`;
-    fitText(doc, meta, headW, 8);
-    doc.text(meta, textX, 35.5);
-    y = 56;
-  } else {
-    doc.setFont(MONO, "normal");
-    doc.setFontSize(7.6);
-    textColor(doc, k.faint);
-    doc.setCharSpace(0.6);
-    doc.text(data.location.toUpperCase(), M.left, y);
-    doc.setCharSpace(0);
-    y += 10;
-    doc.setFont(ctx.body, "bold");
-    textColor(doc, k.ink);
-    fitText(doc, data.name, CONTENT_W, 26, 14);
-    doc.text(data.name, M.left, y);
-    y += 8;
-    doc.setFont(ctx.body, "normal");
-    doc.setFontSize(12);
-    textColor(doc, k.muted);
-    doc.text(data.title, M.left, y);
-    y += 7;
-    drawColor(doc, k.rule);
-    doc.line(M.left, y, PAGE.w - M.right, y);
-    y += 8;
-  }
+  let y = drawHeader(ctx, data, opts.avatar ?? null);
 
   /** Card wrapper used by Professional; the others draw straight onto the page. */
   const card = (h: number) => {
@@ -408,34 +460,34 @@ export function generatePortfolioPdf(data: PortfolioData, opts: PdfOptions = {})
   // ---------------- Summary ----------------
   if (cfg.id !== "modern") {
     const labelH = cfg.labels.summary ? 3.4 + 3.5 : 0;
-    const bodyH = paragraph(ctx, data.summary, innerX, 0, innerW, 10, k.body, false, 1.5);
+    const bodyH = paragraph(ctx, { text: data.summary, x: innerX, y: 0, w: innerW, size: 10, color: k.body, render: false, lead: 1.5 });
     ensure(labelH + bodyH + 14);
     card(labelH + bodyH);
     if (cfg.labels.summary) {
       y += caption(ctx, cfg.labels.summary, innerX, y, true);
       y += 3.5;
     }
-    y += paragraph(ctx, data.summary, innerX, y, innerW, 10, k.body, true, 1.5);
+    y += paragraph(ctx, { text: data.summary, x: innerX, y, w: innerW, size: 10, color: k.body, render: true, lead: 1.5 });
     y += cfg.id === "professional" ? 14 : 11;
   }
 
   // ---------------- Skills ----------------
   if (cfg.labels.skills) {
     if (k.skillStyle === "pills") {
-      const h = pills(ctx, data.skills, innerX, 0, innerW, { bg: k.pillBg!, ink: k.pillInk!, size: 8 }, false);
+      const h = pills(ctx, { items: data.skills, x: innerX, y: 0, maxW: innerW, bg: k.pillBg!, ink: k.pillInk!, size: 8, render: false });
       ensure(h + 20);
       card(3.4 + 4.5 + h);
       y += caption(ctx, cfg.labels.skills, innerX, y, true);
       y += 5.5;
-      y += pills(ctx, data.skills, innerX, y, innerW, { bg: k.pillBg!, ink: k.pillInk!, size: 8 }, true);
+      y += pills(ctx, { items: data.skills, x: innerX, y, maxW: innerW, bg: k.pillBg!, ink: k.pillInk!, size: 8, render: true });
       y += 14;
     } else {
       const joined = data.skills.join("  ·  ");
-      const h = paragraph(ctx, joined, innerX, 0, innerW, 10, k.body, false, 1.6);
+      const h = paragraph(ctx, { text: joined, x: innerX, y: 0, w: innerW, size: 10, color: k.body, render: false, lead: 1.6 });
       ensure(h + 16);
       y += caption(ctx, cfg.labels.skills, innerX, y, true);
       y += 4.5;
-      y += paragraph(ctx, joined, innerX, y, innerW, 10, k.body, true, 1.6);
+      y += paragraph(ctx, { text: joined, x: innerX, y, w: innerW, size: 10, color: k.body, render: true, lead: 1.6 });
       y += 11;
     }
   }
@@ -446,7 +498,7 @@ export function generatePortfolioPdf(data: PortfolioData, opts: PdfOptions = {})
   y += cfg.id === "minimal" ? 6 : 6.5;
 
   data.projects.forEach((p, i) => {
-    const h = projectBlock(ctx, data, p, i, y, false);
+    const h = projectBlock(ctx, { project: p, index: i, startY: y, render: false });
     // Keep each project whole; 6mm guard keeps blocks off the page seam.
     if (y + h + 6 > BOTTOM_LIMIT && h <= MAX_BLOCK_H) {
       newPage();
@@ -457,7 +509,7 @@ export function generatePortfolioPdf(data: PortfolioData, opts: PdfOptions = {})
       drawColor(doc, k.rule);
       doc.roundedRect(M.left, y, CONTENT_W, h, 2.4, 2.4, "FD");
     }
-    projectBlock(ctx, data, p, i, y, true);
+    projectBlock(ctx, { project: p, index: i, startY: y, render: true });
     y += h;
     if (cfg.id === "minimal") {
       y += 6;

@@ -39,7 +39,7 @@ function Panel({
   );
 }
 
-export default function ProjectInsights() {
+export default function ProjectInsights(): React.ReactElement {
   const { id = "" } = useParams();
   const { state } = useApp();
   const repo = getRepo(id);

@@ -12,7 +12,7 @@ import { toast } from "sonner";
 const SAMPLE =
   "Senior Android Developer with strong experience in Kotlin, Jetpack Compose, MVVM, REST APIs, Coroutines and automated testing.";
 
-export default function JobMatch() {
+export default function JobMatch(): React.ReactElement {
   const { state, update } = useApp();
   const [text, setText] = useState(state.jobDescription);
   const [busy, setBusy] = useState(false);

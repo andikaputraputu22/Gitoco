@@ -321,41 +321,66 @@ const GAP_KEYWORDS = [
   "Automated testing", "CI/CD", "Kubernetes", "GraphQL", "Accessibility", "Performance profiling",
 ];
 
-/** Simulated AI job-match analysis. Replace with an LLM call later; the return shape stays. */
-export function analyzeJobMatch(description: string, analyzedRepoIds: string[]): JobMatchResult {
-  const text = description.toLowerCase();
+/** Every technology + architecture pattern across the given repos. */
+function ownedSkills(repoIds: string[]): Set<string> {
   const owned = new Set<string>();
-  const pool = analyzedRepoIds.length ? analyzedRepoIds : REPOS.map((r) => r.id);
-  pool.forEach((id) => {
-    getInsight(id)?.techStack.forEach((t) => owned.add(t.toLowerCase()));
-    getInsight(id)?.architecture.forEach((t) => owned.add(t.toLowerCase()));
+  repoIds.forEach((id) => {
+    const insight = getInsight(id);
+    insight?.techStack.forEach((t) => owned.add(t.toLowerCase()));
+    insight?.architecture.forEach((t) => owned.add(t.toLowerCase()));
   });
+  return owned;
+}
 
-  const mentioned = SKILL_KEYWORDS.filter((k) => text.includes(k.toLowerCase()));
-  const strong = mentioned.filter(
-    (k) => owned.has(k.toLowerCase()) || (k === "REST API" && (owned.has("retrofit") || owned.has("ktor") || text.includes("rest"))),
+/** Requirements named in the job description that the developer demonstrably has. */
+function strongMatches(text: string, mentioned: string[], owned: Set<string>): string[] {
+  return mentioned.filter(
+    (k) =>
+      owned.has(k.toLowerCase()) ||
+      (k === "REST API" && (owned.has("retrofit") || owned.has("ktor") || text.includes("rest"))),
   );
-  const gaps = GAP_KEYWORDS.filter((g) =>
+}
+
+/** Requirements named in the description with no matching evidence. */
+function detectGaps(text: string): string[] {
+  return GAP_KEYWORDS.filter((g) =>
     g.split(/[/ ]/).some((part) => part.length > 2 && text.includes(part.toLowerCase())),
   );
+}
 
+function scoreOf(mentioned: string[], strong: string[], gapCount: number): number {
   const base = mentioned.length ? Math.round((strong.length / mentioned.length) * 100) : 74;
-  const score = Math.max(48, Math.min(96, Math.round(base * 0.95) - gaps.length * 4 - 4));
-  const listedGaps = gaps.includes("CI/CD") ? gaps : [...gaps, "CI/CD"];
+  return Math.max(48, Math.min(96, Math.round(base * 0.95) - gapCount * 4 - 4));
+}
 
-  const ranked = pool
+/** The two projects that best evidence this role, by keyword hits then impact. */
+function rankProjects(text: string, repoIds: string[]): string[] {
+  return repoIds
     .map((id) => ({ id, insight: getInsight(id) }))
     .filter((x) => x.insight)
-    .map((x) => {
-      const hits = x.insight!.techStack.filter((t) => text.includes(t.toLowerCase())).length;
-      return { id: x.id, hits, impact: x.insight!.scores.impact };
-    })
+    .map((x) => ({
+      id: x.id,
+      hits: x.insight!.techStack.filter((t) => text.includes(t.toLowerCase())).length,
+      impact: x.insight!.scores.impact,
+    }))
     .sort((a, b) => b.hits - a.hits || b.impact - a.impact)
     .slice(0, 2)
     .map((x) => getRepo(x.id)?.name ?? x.id);
+}
+
+/** Simulated AI job-match analysis. Replace with an LLM call later; the return shape stays. */
+export function analyzeJobMatch(description: string, analyzedRepoIds: string[]): JobMatchResult {
+  const text = description.toLowerCase();
+  const pool = analyzedRepoIds.length ? analyzedRepoIds : REPOS.map((r) => r.id);
+
+  const mentioned = SKILL_KEYWORDS.filter((k) => text.includes(k.toLowerCase()));
+  const strong = strongMatches(text, mentioned, ownedSkills(pool));
+  const gaps = detectGaps(text);
+  const listedGaps = gaps.includes("CI/CD") ? gaps : [...gaps, "CI/CD"];
+  const ranked = rankProjects(text, pool);
 
   return {
-    score,
+    score: scoreOf(mentioned, strong, gaps.length),
     strong: strong.length ? strong : ["Kotlin", "Jetpack Compose", "MVVM", "REST API", "Coroutines"],
     gaps: listedGaps.length ? listedGaps : ["Automated testing", "CI/CD"],
     recommendedProjects: ranked.length ? ranked : ["Oboeru", "NewsStream"],

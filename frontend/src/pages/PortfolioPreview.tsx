@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { FileDown, Globe, Loader2, Sparkles } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
@@ -12,20 +12,20 @@ import { analyzedRepos, useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-export default function PortfolioPreview() {
+export default function PortfolioPreview(): React.ReactElement {
   const { state, update } = useApp();
-  const repos = analyzedRepos(state.analyzedIds);
+  // Memoised so `data`/`buildDocument` keep a stable identity between renders —
+  // ExportPdfDialog's effect depends on buildDocument and would otherwise
+  // restart the export sequence on every parent re-render.
+  const repos = useMemo(() => analyzedRepos(state.analyzedIds), [state.analyzedIds]);
   const [generating, setGenerating] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
 
   // The document the preview renders. The PDF export is handed this exact object,
   // so both surfaces always agree on content, order and template.
-  const data = buildPortfolio(repos, state.template);
-  const buildDocument = useCallback(
-    () => buildPortfolio(repos, state.template),
-    [repos, state.template],
-  );
+  const data = useMemo(() => buildPortfolio(repos, state.template), [repos, state.template]);
+  const buildDocument = useCallback(() => data, [data]);
 
   function generate() {
     setGenerating(true);

@@ -10,7 +10,7 @@ import { analyzedRepos, useApp } from "@/lib/store";
  * Renders the same document component and state as the dashboard preview, so the
  * published page always matches what the user reviewed.
  */
-export default function PublicPortfolio() {
+export default function PublicPortfolio(): React.ReactElement {
   const { handle = "" } = useParams();
   const { state } = useApp();
   const repos = analyzedRepos(state.analyzedIds);

@@ -49,7 +49,7 @@ function StatCard({
   );
 }
 
-export default function Dashboard() {
+export default function Dashboard(): React.ReactElement {
   const { state, stats } = useApp();
   const [modal, setModal] = useState(false);
   const featured = analyzedRepos(state.analyzedIds);

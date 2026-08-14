@@ -25,7 +25,7 @@ const TEMPLATE_LABELS: Record<string, string> = {
   modern: "Modern",
 };
 
-export default function Settings() {
+export default function Settings(): React.ReactElement {
   const { state, update, reset } = useApp();
   const [headline, setHeadline] = useState(state.headline);
   const [email, setEmail] = useState(DEVELOPER.email);

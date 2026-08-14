@@ -1,0 +1,74 @@
+{
+  "iteration": 1,
+  "app": "Gitoco (frontend-only prototype)",
+  "mode": "generate",
+  "summary": "All 8 acceptance criteria exercised via named, re-runnable browser checks. No backend API endpoints are used by the UI (per briefing seed_facts), so no backend pytest lane was required; app state is entirely localStorage-driven mock data. All 8 checks passed on first run with zero console errors and zero HTTP responses >= 400 observed across the full journey.",
+  "passed": 8,
+  "failed": 0,
+  "bugs": [],
+  "action_items": [],
+  "retest_needed": false,
+  "checks": [
+    {
+      "criterion": "Full demo flow works end to end after refactor: Connect GitHub -> select repositories -> Analyze -> AI insights -> Generate Portfolio",
+      "name": "full-demo-flow-end-to-end",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Fresh /dashboard shows Connect GitHub; after connecting, /repositories renders 6 repo cards with selected-count='3 selected'; Analyze navigates to /analyzing (6 steps visible, analysis-step-5 present) then auto-navigates to /insights/<id> showing insight-title, insight-complexity-badge, insight-scores-panel, insight-roles-panel; Generate My Portfolio -> Generate My Portfolio button produces template-selector on /portfolio."
+    },
+    {
+      "criterion": "PDF export works for all three templates and the exported file downloads",
+      "name": "pdf-export-all-templates",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "For minimal/professional/modern: export-pdf-dialog shows 4-step StepList, reaches export-pdf-success with title 'Your portfolio PDF is ready.' and filename badge i-putu-andika-putra-portfolio-<template>.pdf; Download PDF fired a real download event with matching suggestedFilename; Preview PDF opened a new browser tab (page event) per each template."
+    },
+    {
+      "criterion": "Switching the template changes both the preview and the exported PDF",
+      "name": "template-switch-updates-preview-and-export",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Only the active template's data-testid (portfolio-template-professional/minimal/modern) is present in the DOM at any time (others assert toHaveCount(0)); export dialog description text and filename badge tracked the selected template (portfolio-minimal.pdf, then portfolio-modern.pdf after switching)."
+    },
+    {
+      "criterion": "Publish flow and public portfolio page work",
+      "name": "publish-flow-and-public-page",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "publish-dialog showed 3 steps then publish-success with title 'Your portfolio is live!' and public-url-value 'gitoco.com/andikaputraputu'; Copy Link wrote https://gitoco.com/andikaputraputu to clipboard; Open Portfolio navigated to /portfolio/andikaputraputu rendering public-portfolio-page with 'Built with Gitoco' footer and zero occurrences of template-selector/export-pdf-btn/publish-portfolio-btn/nav in the DOM."
+    },
+    {
+      "criterion": "Job Match scoring is unchanged after extracting the scoring helpers",
+      "name": "job-match-scoring-unchanged",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Use sample role -> Analyze Job Match produced job-match-score text '87%'; job-match-strong contained Kotlin, Jetpack Compose, MVVM, REST API, Coroutines; job-match-gaps contained Automated testing and CI/CD; job-match-recommended-projects contained Oboeru and NewsStream."
+    },
+    {
+      "criterion": "GitHub connection state gates identity consistently in header and Settings",
+      "name": "github-connection-gates-identity",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Disconnected: header shows user-profile-placeholder 'Not connected' (no header-avatar), /settings shows settings-github-disconnected with Connect GitHub and no name/handle/email nodes. After connecting via Settings: settings-profile-section shows 'I Putu Andika Putra' / '@andikaputraputu' + avatar; header shows same via user-profile-trigger. After analysing a project then disconnecting via Settings > Integrations, both surfaces reverted to disconnected while /projects screenshot confirmed all 3 analysed projects (Oboeru, Ananka, NewsStream) remained listed."
+    },
+    {
+      "criterion": "Default theme is light for a new visitor and the toggle still persists",
+      "name": "theme-default-light-and-toggle-persists",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Fresh session <html class> did not contain 'dark'; clicking theme-toggle-dashboard added 'dark' class; class survived page.reload(); toggling again removed 'dark', returning to light."
+    },
+    {
+      "criterion": "No console errors or failed network requests during the whole journey",
+      "name": "no-console-errors-full-journey",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Walked landing -> dashboard -> connect -> repositories -> analyze -> insights -> portfolio -> export -> publish -> public page -> job-match -> projects -> settings. response listener collecting status>=400 returned an empty array; tool-reported console_errors array was also empty ([])."
+    }
+  ],
+  "notes": [
+    "App is frontend-only mock-data prototype (briefing seed_facts); no backend endpoints are exercised by the UI, so no backend pytest lane was authored per the API-bearing-criterion rule.",
+    "Header bell/profile being aria-disabled and PDF preview opening a blank blob tab in headless Chromium were treated per spec_deviations as intentional, not bugs.",
+    "All checks used a fresh browser context per run (no shared localStorage), matching the 'fresh session' requirement in the acceptance matrix; each check performs its own Connect GitHub / analyze fixture rather than depending on any other check's state."
+  ]
+}

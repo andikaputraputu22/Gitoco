@@ -77,5 +77,15 @@ Print-only adaptations (deliberate): fixed A4 instead of responsive widths, sing
 - **Disconnect GitHub** lives in the Settings > Integrations card and clears only `connected` — analysed projects, generated portfolio and the published page are unrelated data and survive. Both the header and the Settings card return to their disconnected states, and `/repositories` shows its connect prompt again.
 - Header notifications and the profile/avatar are **intentionally inactive** in this prototype: rendered as non-interactive `<span>`s with `aria-disabled`, `cursor-not-allowed`, a tooltip and reduced opacity. No dropdown, no route change, no console warning. The notification dot remains as a visual demo element. Avatar + demo name stay visible.
 
+
+## Code structure notes (post code-review refactor)
+- `lib/pdf.ts`: drawing helpers (`paragraph`, `bullets`, `pills`, `projectBlock`) take a single options object instead of long positional lists; per-template headers live in `minimalHeader` / `professionalHeader` / `modernHeader` behind a `drawHeader()` dispatcher, keeping `generatePortfolioPdf` short.
+- `lib/usePdfExport.ts`: `usePdfExport(open, buildDocument)` owns the export sequence (step timing, avatar pre-load, generation, blob-URL cleanup) plus `downloadPdf()` / `openPdfInNewTab()`. `components/ExportPdfDialog.tsx` is presentational.
+- `components/StepList.tsx`: shared progress checklist used by both the PDF export and publish dialogs.
+- `components/DashboardHeader.tsx`: top bar extracted out of `AppLayout.tsx` (mobile drawer trigger, search, theme toggle, gated GitHub identity).
+- `lib/mock.ts`: `analyzeJobMatch()` delegates to pure helpers (`ownedSkills`, `strongMatches`, `detectGaps`, `scoreOf`, `rankProjects`). Scoring behaviour is unchanged — the canonical sample role still returns 87%.
+- `pages/PortfolioPreview.tsx`: `repos` and `data` are memoised on `state.analyzedIds` / `state.template` so `buildDocument` has a stable identity and the export effect can't restart on unrelated re-renders.
+- Review items deliberately not actioned: the reported "missing hook dependencies" were false positives (module constants, imports, types, globals and setState identities are not valid deps — `yarn lint` reports zero hook warnings), and the localStorage "sensitive data" finding does not apply: only the colour theme and mock demo state are stored, and this prototype has no backend, auth or real user data.
+
 ## Credentials
 None — no login gate anywhere.

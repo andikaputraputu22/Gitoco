@@ -38,7 +38,7 @@ const PIPELINE = [
   { label: "Professional Portfolio", meta: "Published · Advanced complexity", tone: "text-[var(--success)]" },
 ];
 
-export default function Landing() {
+export default function Landing(): React.ReactElement {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-40 border-b border-border glass">

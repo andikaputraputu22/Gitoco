@@ -13,7 +13,7 @@ import JobMatch from "@/pages/JobMatch";
 import Settings from "@/pages/Settings";
 
 // One <Route> per page in src/pages; BrowserRouter already wraps this in main.tsx.
-export default function App() {
+export default function App(): React.ReactElement {
   return (
     <AppStateProvider>
       <Routes>

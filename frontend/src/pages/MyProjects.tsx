@@ -12,7 +12,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { getInsight } from "@/lib/mock";
 import { analyzedRepos, useApp } from "@/lib/store";
 
-export default function MyProjects() {
+export default function MyProjects(): React.ReactElement {
   const { state } = useApp();
   const repos = analyzedRepos(state.analyzedIds);
 
