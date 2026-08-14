@@ -10,6 +10,7 @@ import {
   Search,
   Settings,
   Sparkles,
+  UserRound,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -114,6 +115,9 @@ export default function AppLayout({
   action?: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  // GitHub identity in the header is driven by the persisted connection state,
+  // so it survives navigation across the whole demo flow.
+  const { state: { connected } } = useApp();
 
   return (
     <div className="min-h-screen bg-background lg:grid lg:grid-cols-[264px_1fr]">
@@ -158,16 +162,46 @@ export default function AppLayout({
               <Bell className="h-4 w-4" />
               <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-primary/50" />
             </span>
-            {/* Profile menu is intentionally inactive in this prototype. */}
-            <span
-              aria-disabled="true"
-              title="Account menu isn't available in this prototype"
-              className="flex cursor-not-allowed items-center gap-2 rounded-full pl-1 pr-3 opacity-70"
-              data-testid="user-profile-trigger"
-            >
-              <img src={DEVELOPER.avatar} alt="" className="h-7 w-7 rounded-full object-cover" />
-              <span className="hidden text-[13px] font-medium sm:inline">{DEVELOPER.name}</span>
-            </span>
+            {/* Profile menu is intentionally inactive in this prototype.
+                Identity only appears once GitHub is connected — before that the
+                header shows a neutral placeholder. */}
+            {connected ? (
+              <span
+                aria-disabled="true"
+                title="Account menu isn't available in this prototype"
+                className="flex cursor-not-allowed items-center gap-2.5 rounded-full pl-1 pr-3 opacity-90"
+                data-testid="user-profile-trigger"
+              >
+                <img
+                  src={DEVELOPER.avatar}
+                  alt={DEVELOPER.fullName}
+                  className="h-8 w-8 rounded-full object-cover"
+                  data-testid="header-avatar"
+                />
+                <span className="hidden leading-tight sm:flex sm:flex-col">
+                  <span className="text-[13px] font-medium" data-testid="header-profile-name">
+                    {DEVELOPER.fullName}
+                  </span>
+                  <span className="mono text-[11px] text-muted-foreground" data-testid="header-profile-handle">
+                    @{DEVELOPER.handle}
+                  </span>
+                </span>
+              </span>
+            ) : (
+              <span
+                aria-disabled="true"
+                title="Connect GitHub to load your developer profile"
+                className="flex cursor-not-allowed items-center gap-2 rounded-full pl-1 pr-3"
+                data-testid="user-profile-placeholder"
+              >
+                <span className="grid h-8 w-8 place-items-center rounded-full border border-dashed border-border bg-muted text-muted-foreground">
+                  <UserRound className="h-4 w-4" />
+                </span>
+                <span className="hidden text-[13px] font-medium text-muted-foreground sm:inline">
+                  Not connected
+                </span>
+              </span>
+            )}
           </div>
         </header>
 

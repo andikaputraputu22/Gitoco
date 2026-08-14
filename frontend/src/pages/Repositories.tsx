@@ -127,7 +127,7 @@ export default function Repositories() {
         <p className="max-w-md text-[13px] leading-relaxed text-muted-foreground">
           Analysis runs on repository metadata only. This prototype uses simulated AI output.
         </p>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <Link to="/dashboard" className={buttonVariants({ variant: "outline" }) + " rounded-full"} data-testid="back-to-dashboard-btn">
             Back to overview
           </Link>
