@@ -18,12 +18,13 @@ Contest prototype. "Turn your GitHub into a professional developer portfolio."
 | `/analyzing` | Simulated 6-step AI analysis, then redirects to `/insights/<first id>` |
 | `/insights/:id` | AI project insight report |
 | `/projects` | My Projects list of analysed repos |
-| `/portfolio` | Generate + preview portfolio, 3 switchable templates |
+| `/portfolio` | Generate + preview portfolio, 3 switchable templates, Export PDF, Publish |
+| `/portfolio/:handle` | **Public** standalone portfolio page (no dashboard chrome) |
 | `/job-match` | Paste job description → simulated match score |
 | `/settings` | Profile, default template, theme, GitHub status, reset demo |
 
 ## State model (`AppState`)
-`connected`, `analyzedIds: string[]`, `template: minimal|professional|modern`, `portfolioGenerated`, `jobMatch`, `jobDescription`, `headline`.
+`connected`, `analyzedIds: string[]`, `template: minimal|professional|modern`, `portfolioGenerated`, `published`, `jobMatch`, `jobDescription`, `headline`.
 
 Derived stats: analysed count, portfolio completion % (connected 20 + 15/project capped 45 + generated 25 + jobMatch 10), technologies detected, job score.
 
@@ -31,7 +32,7 @@ Derived stats: analysed count, portfolio completion % (connected 20 + 15/project
 Developer: Andika Pratama (@andikadev). Repos: `oboeru`, `ananka`, `newsstream` (recommended) + `kanjiflow`, `warungapi`, `dotfiles`. Each has a matching `Insight` (overview, techStack, architecture, features, strengths, complexity, roles, resumeBullets, scores).
 
 ## Key flow (demo happy path)
-Landing → Get Started → Dashboard (empty) → Connect GitHub modal → Authorise → `/repositories` (3 recommended pre-checked) → Analyze Selected Projects → `/analyzing` → `/insights/oboeru` → Generate My Portfolio → `/portfolio` (Generate → template switching) → `/job-match` (Use sample role → Analyze).
+Landing → Get Started → Dashboard (empty) → Connect GitHub modal → Authorise → `/repositories` (3 recommended pre-checked) → Analyze Selected Projects → `/analyzing` → `/insights/oboeru` → Generate My Portfolio → `/portfolio` (Generate → template switching → Export PDF → Publish Portfolio → `/portfolio/andikadev`) → `/job-match` (Use sample role → Analyze).
 
 ## Extension points
 - `analyzeJobMatch()` and `getInsight()` in `mock.ts` are the seams to replace with real OpenAI calls.
@@ -45,7 +46,9 @@ Landing → Get Started → Dashboard (empty) → Connect GitHub modal → Autho
 - Shared helpers: `heroLine()` (Modern's merged title+summary line) and `projectHeading()` (Minimal/Modern show the short repo name, Professional the full insight title).
 - `SECTION_ORDER` = summary -> skills -> work -> contact.
 
-Two renderers consume it and nothing else:
+`components/PortfolioDocumentView.tsx` renders the document (the three template components) and is shared verbatim by the dashboard preview and the public page, so the published page is the same markup the user reviewed.
+
+Two renderers consume the data:
 1. **Live preview** (`pages/PortfolioPreview.tsx`) — no hardcoded portfolio copy, labels or colours; token values are applied as inline styles so the portfolio keeps its own palette regardless of the app's light/dark theme.
 2. **PDF export** (`lib/pdf.ts`) — print mechanics only (A4 210x297mm, 20mm margins, wrapping, page breaks, `fitText()` margin guard). It reproduces the selected template's identity: Minimal = white page/serif/editorial rules, Professional = white header band + white rounded cards + pill chips + KEY FEATURES list, Modern = dark page + accent label + numbered dark panels. The template shown in the preview is the template exported.
 
@@ -56,6 +59,14 @@ Print-only adaptations (deliberate): fixed A4 instead of responsive widths, sing
 
 ## PDF export UI
 `frontend/src/components/ExportPdfDialog.tsx`: "Export PDF" button on `/portfolio` -> 4-step progress (Preparing portfolio -> Formatting document -> Generating PDF -> PDF ready) -> success "Your portfolio PDF is ready." with **Download PDF** and **Preview PDF** (opens a new tab, falls back to download). Library: `jspdf` — real vector PDF, selectable text, clickable links, never a screenshot.
+
+
+## Public portfolio URL (simulated)
+- "Publish Portfolio" on `/portfolio` opens `components/PublishDialog.tsx`: 3-step animation (Preparing portfolio -> Creating public page -> Publishing portfolio) -> success "Your portfolio is live!" showing `gitfolio.dev/<handle>` with **Open Portfolio** (navigates to `/portfolio/<handle>`) and **Copy Link** (writes `https://gitfolio.dev/<handle>` to the clipboard).
+- Publishing sets `published: true` in local state; the preview then shows a persistent "Live at ..." banner with a View public page link and the button becomes "Republish". `Settings -> Reset demo data` clears it.
+- `pages/PublicPortfolio.tsx` (`/portfolio/:handle`) renders `PortfolioDocumentView` with no dashboard chrome — no sidebar, topbar, template selector or export/publish controls — plus a subtle footer with the portfolio URL and "Built with GitFolio AI". It uses the same state and selected template as the preview, and is responsive (verified: no horizontal overflow at 390px).
+- If nothing is generated in the session, or the handle doesn't match, it shows an "isn't published" state with a link back to the dashboard. The public URL is simulated: no persistence, no hosting, no backend — it is served from the local session only.
+- Naming deviation from the brief: the brief said `devfolio.ai/andika` and "Built with Devfolio AI", but the app is branded **GitFolio AI** per the earlier decision to use that name everywhere, so the URL is `gitfolio.dev/andikadev` (the developer's real handle) and the footer reads "Built with GitFolio AI".
 
 ## Credentials
 None — no login gate anywhere.

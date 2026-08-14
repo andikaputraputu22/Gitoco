@@ -10,6 +10,7 @@ export interface AppState {
   analyzedIds: string[];
   template: TemplateId;
   portfolioGenerated: boolean;
+  published: boolean;
   jobMatch: JobMatchResult | null;
   jobDescription: string;
   headline: string;
@@ -22,6 +23,7 @@ const INITIAL: AppState = {
   analyzedIds: [],
   template: "professional",
   portfolioGenerated: false,
+  published: false,
   jobMatch: null,
   jobDescription: "",
   headline: "Android & Full-Stack Engineer",

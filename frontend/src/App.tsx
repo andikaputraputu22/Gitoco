@@ -8,6 +8,7 @@ import AIAnalysis from "@/pages/AIAnalysis";
 import ProjectInsights from "@/pages/ProjectInsights";
 import MyProjects from "@/pages/MyProjects";
 import PortfolioPreview from "@/pages/PortfolioPreview";
+import PublicPortfolio from "@/pages/PublicPortfolio";
 import JobMatch from "@/pages/JobMatch";
 import Settings from "@/pages/Settings";
 
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/insights/:id" element={<ProjectInsights />} />
         <Route path="/projects" element={<MyProjects />} />
         <Route path="/portfolio" element={<PortfolioPreview />} />
+        <Route path="/portfolio/:handle" element={<PublicPortfolio />} />
         <Route path="/job-match" element={<JobMatch />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Landing />} />
