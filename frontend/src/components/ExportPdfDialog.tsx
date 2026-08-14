@@ -10,7 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PDF_STEPS, generatePortfolioPdf } from "@/lib/pdf";
-import type { PortfolioDocument, PdfResult } from "@/lib/pdf";
+import type { PdfResult } from "@/lib/pdf";
+import type { PortfolioData } from "@/lib/portfolio";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -25,7 +26,7 @@ export function ExportPdfDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
   /** Called at export time so the PDF always uses the currently previewed content. */
-  buildDocument: () => PortfolioDocument;
+  buildDocument: () => PortfolioData;
   templateLabel: string;
 }) {
   const [step, setStep] = useState(0);
