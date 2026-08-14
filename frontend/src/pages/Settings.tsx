@@ -2,9 +2,12 @@ import { useState } from "react";
 import {
   RotateCcw,
   Save,
+  Unplug,
+  UserRound,
 } from "lucide-react";
 import { Github } from "@/components/GithubIcon";
 import AppLayout from "@/components/AppLayout";
+import { ConnectGitHubModal } from "@/components/ConnectGitHubModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,40 +29,73 @@ export default function Settings() {
   const { state, update, reset } = useApp();
   const [headline, setHeadline] = useState(state.headline);
   const [email, setEmail] = useState(DEVELOPER.email);
+  const [connectOpen, setConnectOpen] = useState(false);
 
   return (
     <AppLayout title="Settings" subtitle="Profile, portfolio defaults and demo workspace controls.">
+      <ConnectGitHubModal open={connectOpen} onOpenChange={setConnectOpen} redirectTo={null} />
+
       <div className="grid max-w-3xl gap-6">
-        <section className="rounded-2xl border border-border bg-card p-7" data-testid="settings-profile-section">
-          <h2 className="font-heading text-[16px] font-semibold">Developer profile</h2>
-          <div className="mt-6 flex items-center gap-4">
-            <img src={DEVELOPER.avatar} alt="" className="h-14 w-14 rounded-xl object-cover" />
-            <div>
-              <p className="text-[14px] font-medium">{DEVELOPER.fullName}</p>
-              <p className="mono text-[12px] text-muted-foreground">@{DEVELOPER.handle}</p>
+        {/* GitHub identity is only shown once the (simulated) connection succeeded. */}
+        {state.connected ? (
+          <section className="rounded-2xl border border-border bg-card p-7" data-testid="settings-profile-section">
+            <h2 className="font-heading text-[16px] font-semibold">GitHub account</h2>
+            <div className="mt-6 flex items-center gap-4">
+              <img
+                src={DEVELOPER.avatar}
+                alt={DEVELOPER.fullName}
+                className="h-14 w-14 rounded-xl object-cover"
+                data-testid="settings-github-avatar"
+              />
+              <div>
+                <p className="text-[14px] font-medium" data-testid="settings-github-name">
+                  {DEVELOPER.fullName}
+                </p>
+                <p className="mono text-[12px] text-muted-foreground" data-testid="settings-github-handle">
+                  @{DEVELOPER.handle}
+                </p>
+                <p className="mono text-[12px] text-muted-foreground" data-testid="settings-github-email">
+                  {DEVELOPER.email}
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="mt-6 grid gap-5 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="headline">Professional title</Label>
-              <Input id="headline" value={headline} onChange={(e) => setHeadline(e.target.value)} data-testid="settings-headline-input" />
+            <div className="mt-6 grid gap-5 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="headline">Professional title</Label>
+                <Input id="headline" value={headline} onChange={(e) => setHeadline(e.target.value)} data-testid="settings-headline-input" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Contact email</Label>
+                <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} data-testid="settings-email-input" />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Contact email</Label>
-              <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} data-testid="settings-email-input" />
+            <Button
+              className="mt-6 rounded-full"
+              onClick={() => {
+                update({ headline });
+                toast.success("Profile saved");
+              }}
+              data-testid="settings-save-btn"
+            >
+              <Save className="mr-2 h-4 w-4" /> Save changes
+            </Button>
+          </section>
+        ) : (
+          <section className="rounded-2xl border border-border bg-card p-7" data-testid="settings-github-disconnected">
+            <h2 className="font-heading text-[16px] font-semibold">GitHub account</h2>
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+              <span className="grid h-14 w-14 place-items-center rounded-xl border border-dashed border-border bg-muted text-muted-foreground">
+                <UserRound className="h-6 w-6" />
+              </span>
+              <p className="max-w-sm text-[13.5px] leading-relaxed text-muted-foreground">
+                Connect your GitHub account to import your repositories and developer profile.
+              </p>
             </div>
-          </div>
-          <Button
-            className="mt-6 rounded-full"
-            onClick={() => {
-              update({ headline });
-              toast.success("Profile saved");
-            }}
-            data-testid="settings-save-btn"
-          >
-            <Save className="mr-2 h-4 w-4" /> Save changes
-          </Button>
-        </section>
+            <Button className="mt-6 rounded-full" onClick={() => setConnectOpen(true)} data-testid="settings-connect-github-btn">
+              <Github className="mr-2 h-4 w-4" /> Connect GitHub
+            </Button>
+          </section>
+        )}
 
         <section className="rounded-2xl border border-border bg-card p-7" data-testid="settings-portfolio-section">
           <h2 className="font-heading text-[16px] font-semibold">Portfolio defaults</h2>
@@ -101,9 +137,36 @@ export default function Settings() {
                 </p>
               </div>
             </div>
-            <Badge variant={state.connected ? "secondary" : "outline"} className="mono text-[11px]" data-testid="settings-github-status">
-              {state.connected ? "CONNECTED" : "DISCONNECTED"}
-            </Badge>
+            <div className="flex items-center gap-3">
+              <Badge variant={state.connected ? "secondary" : "outline"} className="mono text-[11px]" data-testid="settings-github-status">
+                {state.connected ? "CONNECTED" : "DISCONNECTED"}
+              </Badge>
+              {state.connected ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => {
+                    // Clears the GitHub link only — analysed projects and the
+                    // portfolio are unrelated data and stay untouched.
+                    update({ connected: false });
+                    toast.success("GitHub disconnected");
+                  }}
+                  data-testid="settings-disconnect-github-btn"
+                >
+                  <Unplug className="mr-2 h-3.5 w-3.5" /> Disconnect
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => setConnectOpen(true)}
+                  data-testid="settings-integrations-connect-btn"
+                >
+                  Connect
+                </Button>
+              )}
+            </div>
           </div>
           <p className="mt-4 text-[12.5px] leading-relaxed text-muted-foreground">
             OpenAI and real GitHub OAuth are intentionally out of scope for this prototype. The analysis layer is

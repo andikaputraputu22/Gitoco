@@ -26,9 +26,12 @@ const SCOPES = [
 export function ConnectGitHubModal({
   open,
   onOpenChange,
+  /** Where to go after connecting. Pass null to stay on the current page. */
+  redirectTo = "/repositories",
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  redirectTo?: string | null;
 }) {
   const { update } = useApp();
   const navigate = useNavigate();
@@ -41,7 +44,7 @@ export function ConnectGitHubModal({
       setBusy(false);
       onOpenChange(false);
       toast.success("GitHub connected", { description: "6 repositories imported (simulated)." });
-      navigate("/repositories");
+      if (redirectTo) navigate(redirectTo);
     }, 1400);
   }
 
