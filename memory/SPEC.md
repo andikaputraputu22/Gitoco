@@ -36,6 +36,15 @@ Landing → Get Started → Dashboard (empty) → Connect GitHub modal → Autho
 ## Extension points
 - `analyzeJobMatch()` and `getInsight()` in `mock.ts` are the seams to replace with real OpenAI calls.
 - `ConnectGitHubModal` is the seam for real GitHub OAuth.
+- `generatePortfolioPdf(data: PortfolioDocument)` in `frontend/src/lib/pdf.ts` is pure — feed it a `PortfolioDocument` built from real API data and nothing in the module changes.
+
+## PDF export (client-side, no backend)
+- Library: `jspdf` (added dependency). Real vector PDF with selectable text and clickable links — not a screenshot.
+- `frontend/src/lib/pdf.ts`: A4 (210×297mm), 20mm margins, per-template themes — Minimal (Times, editorial rules), Professional (Helvetica, header band + filled project cards), Modern (dark header band, numbered projects). Includes name, title, summary, skills, projects (description, engineering highlights = strengths + architecture, tech stack, GitHub link) and contact.
+- Page discipline: each project block is measured and drawn through one code path, so a block that would land on a page seam moves to the next page whole (6mm guard). `fitText()` shrinks single-line strings (header meta, footer) so nothing can cross a margin. Footer with developer name + portfolio URL + `n / total` is stamped on every page.
+- `frontend/src/components/ExportPdfDialog.tsx`: "Export PDF" button on `/portfolio` → 4-step progress (Preparing portfolio → Formatting document → Generating PDF → PDF ready) → success state "Your portfolio PDF is ready." with **Download PDF** and **Preview PDF** (new tab, falls back to download).
+- The document is built at export time from the currently selected template + previewed projects, so PDF and preview can't drift.
+
 
 ## Credentials
 None — no login gate anywhere.

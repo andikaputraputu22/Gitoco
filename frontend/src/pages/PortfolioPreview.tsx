@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ExternalLink,
+  FileDown,
   Loader2,
   Mail,
   MapPin,
@@ -9,10 +10,12 @@ import {
 } from "lucide-react";
 import { Github } from "@/components/GithubIcon";
 import AppLayout from "@/components/AppLayout";
+import { ExportPdfDialog } from "@/components/ExportPdfDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { DEVELOPER, getInsight } from "@/lib/mock";
 import type { Repo } from "@/lib/mock";
+import type { PortfolioDocument } from "@/lib/pdf";
 import type { TemplateId } from "@/lib/store";
 import { analyzedRepos, useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -213,6 +216,35 @@ export default function PortfolioPreview() {
   const { state, update } = useApp();
   const repos = analyzedRepos(state.analyzedIds);
   const [generating, setGenerating] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+
+  // Built at export time from the same data the preview renders, so the PDF can
+  // never drift from what the user sees. Swap the source here for real data later.
+  const buildDocument = useCallback((): PortfolioDocument => {
+    return {
+      name: DEVELOPER.fullName,
+      title: DEVELOPER.title,
+      summary: DEVELOPER.summary,
+      location: DEVELOPER.location,
+      email: DEVELOPER.email,
+      githubUrl: DEVELOPER.github,
+      handle: DEVELOPER.handle,
+      portfolioUrl: `gitfolio.dev/${DEVELOPER.handle}`,
+      skills: skillsOf(repos),
+      template: state.template,
+      projects: repos.map((repo) => {
+        const insight = getInsight(repo.id)!;
+        return {
+          name: repo.name,
+          title: insight.title,
+          description: insight.resumeBullets[0] ?? repo.description,
+          tech: insight.techStack,
+          highlights: [...insight.strengths.slice(0, 3), ...insight.architecture],
+          githubUrl: repo.githubUrl,
+        };
+      }),
+    };
+  }, [repos, state.template]);
 
   function generate() {
     setGenerating(true);
@@ -275,11 +307,22 @@ export default function PortfolioPreview() {
       title="Portfolio preview"
       subtitle="A live developer portfolio generated from your analysed repositories. Switch templates instantly."
       action={
-        <Link to="/job-match" className={buttonVariants({ variant: "outline" }) + " rounded-full"} data-testid="portfolio-to-job-match-btn">
-          Optimise for a job
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button className="rounded-full" onClick={() => setExportOpen(true)} data-testid="export-pdf-btn">
+            <FileDown className="mr-2 h-4 w-4" /> Export PDF
+          </Button>
+          <Link to="/job-match" className={buttonVariants({ variant: "outline" }) + " rounded-full"} data-testid="portfolio-to-job-match-btn">
+            Optimise for a job
+          </Link>
+        </div>
       }
     >
+      <ExportPdfDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        buildDocument={buildDocument}
+        templateLabel={TEMPLATES.find((t) => t.id === state.template)?.label ?? "Professional"}
+      />
       <div className="mb-6 flex flex-wrap items-center gap-2 rounded-full border border-border bg-card p-1.5" data-testid="template-selector">
         {TEMPLATES.map((t) => (
           <button
