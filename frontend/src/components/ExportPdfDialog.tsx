@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PDF_STEPS, generatePortfolioPdf } from "@/lib/pdf";
 import type { PdfResult } from "@/lib/pdf";
+import { loadRoundedImage } from "@/lib/image";
+import { TEMPLATES } from "@/lib/portfolio";
 import type { PortfolioData } from "@/lib/portfolio";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -50,21 +52,31 @@ export function ExportPdfDialog({
     let cancelled = false;
 
     const timers: number[] = [];
+    // "Preparing portfolio": fetch the avatar now, since jsPDF can't fetch later.
+    // Only the Professional template shows a photo, matching the preview.
+    const docData = buildDocument();
+    const avatarPromise = TEMPLATES[docData.template].tokens.header === "band"
+      ? loadRoundedImage(docData.avatar)
+      : Promise.resolve(null);
+
     timers.push(window.setTimeout(() => !cancelled && setStep(1), STEP_MS));
     timers.push(window.setTimeout(() => !cancelled && setStep(2), STEP_MS * 2));
     timers.push(
       window.setTimeout(() => {
         if (cancelled) return;
-        try {
-          revoke();
-          const res = generatePortfolioPdf(buildDocument());
-          resultRef.current = res;
-          setResult(res);
-          setStep(4);
-        } catch (e) {
-          setError(e instanceof Error ? e.message : "PDF generation failed");
-          setStep(2);
-        }
+        void avatarPromise.then((avatar) => {
+          if (cancelled) return;
+          try {
+            revoke();
+            const res = generatePortfolioPdf(docData, { avatar });
+            resultRef.current = res;
+            setResult(res);
+            setStep(4);
+          } catch (e) {
+            setError(e instanceof Error ? e.message : "PDF generation failed");
+            setStep(2);
+          }
+        });
       }, STEP_MS * 3),
     );
 

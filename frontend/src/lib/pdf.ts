@@ -270,7 +270,15 @@ function projectBlock(
   return y - startY;
 }
 
-export function generatePortfolioPdf(data: PortfolioData): PdfResult {
+export interface PdfOptions {
+  /**
+   * Rounded avatar as a PNG data URL, pre-loaded by the caller. Only the
+   * Professional template shows a photo, mirroring the preview.
+   */
+  avatar?: string | null;
+}
+
+export function generatePortfolioPdf(data: PortfolioData, opts: PdfOptions = {}): PdfResult {
   const cfg = TEMPLATES[data.template];
   const k = cfg.tokens;
   const doc = new jsPDF({ unit: "mm", format: "a4", compress: true });
@@ -327,19 +335,33 @@ export function generatePortfolioPdf(data: PortfolioData): PdfResult {
     doc.rect(0, 0, PAGE.w, 44, "F");
     drawColor(doc, k.rule);
     doc.line(0, 44, PAGE.w, 44);
+
+    // avatar sits to the left of the name block, as in the preview
+    let textX = M.left;
+    if (opts.avatar) {
+      const photo = 22;
+      try {
+        doc.addImage(opts.avatar, "PNG", M.left, 11, photo, photo);
+        textX = M.left + photo + 6;
+      } catch {
+        textX = M.left;
+      }
+    }
+    const headW = PAGE.w - M.right - textX;
+
     doc.setFont(ctx.body, "bold");
     textColor(doc, k.ink);
-    fitText(doc, data.name, CONTENT_W, 20, 13);
-    doc.text(data.name, M.left, 20);
+    fitText(doc, data.name, headW, 20, 13);
+    doc.text(data.name, textX, 20);
     doc.setFont(ctx.body, "normal");
     doc.setFontSize(11);
     textColor(doc, k.accent);
-    doc.text(data.title, M.left, 28);
+    doc.text(data.title, textX, 28);
     doc.setFont(MONO, "normal");
     textColor(doc, k.faint);
     const meta = `${data.location}    ${data.email}    ${data.handle}`;
-    fitText(doc, meta, CONTENT_W, 8);
-    doc.text(meta, M.left, 35.5);
+    fitText(doc, meta, headW, 8);
+    doc.text(meta, textX, 35.5);
     y = 56;
   } else {
     doc.setFont(MONO, "normal");
