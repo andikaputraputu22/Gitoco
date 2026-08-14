@@ -4,8 +4,10 @@ const KEY = "gitfolio.theme";
 type Theme = "light" | "dark";
 
 function current(): Theme {
+  // Light is the default for a new visitor; OS preference is deliberately ignored.
+  // A stored choice always wins, so a manual switch persists.
   const stored = localStorage.getItem(KEY);
-  return stored === "light" ? "light" : "dark";
+  return stored === "dark" ? "dark" : "light";
 }
 
 function apply(theme: Theme) {

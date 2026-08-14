@@ -35,7 +35,7 @@ export default function JobMatch() {
   return (
     <AppLayout
       title="Job Match"
-      subtitle="Paste a job description and GitFolio AI scores your analysed projects against it."
+      subtitle="Paste a job description and Gitoco scores your analysed projects against it."
     >
       <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
         <section className="rounded-2xl border border-border bg-card p-7">

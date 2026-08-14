@@ -288,7 +288,7 @@ export function generatePortfolioPdf(data: PortfolioData, opts: PdfOptions = {})
     title: `${data.name} — Developer Portfolio`,
     subject: data.title,
     author: data.name,
-    creator: "GitFolio AI",
+    creator: "Gitoco",
   });
 
   const paintPage = () => {

@@ -37,7 +37,7 @@ export default function Repositories() {
           </span>
           <h3 className="mt-5 font-heading text-[18px] font-semibold">No repositories imported</h3>
           <p className="mx-auto mt-2 max-w-sm text-[14px] leading-relaxed text-muted-foreground">
-            GitFolio AI needs read access to your public repositories before it can analyse anything.
+            Gitoco needs read access to your public repositories before it can analyse anything.
           </p>
           <Button className="mt-6 rounded-full" onClick={() => setModal(true)} data-testid="repositories-connect-btn">
             Connect GitHub

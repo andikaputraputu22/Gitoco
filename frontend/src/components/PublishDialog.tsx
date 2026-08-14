@@ -23,9 +23,9 @@ export function PublishDialog({
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  /** Display URL, e.g. gitfolio.dev/andikadev (simulated for the prototype) */
+  /** Display URL, e.g. gitoco.com/andikaputraputu (simulated for the prototype) */
   publicUrl: string;
-  /** In-app route that serves the public page, e.g. /portfolio/andikadev */
+  /** In-app route that serves the public page, e.g. /portfolio/andikaputraputu */
   publicPath: string;
 }) {
   const { update } = useApp();

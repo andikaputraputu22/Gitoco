@@ -54,7 +54,7 @@ export function ConnectGitHubModal({
           </span>
           <DialogTitle className="font-heading text-[20px]">Connect your GitHub account</DialogTitle>
           <DialogDescription>
-            GitFolio AI reads your public repositories to analyse your work. This prototype simulates the
+            Gitoco reads your public repositories to analyse your work. This prototype simulates the
             OAuth handshake — no real GitHub account is contacted.
           </DialogDescription>
         </DialogHeader>
@@ -75,7 +75,7 @@ export function ConnectGitHubModal({
         <Button onClick={connect} disabled={busy} className="w-full rounded-full" data-testid="confirm-connect-github-btn">
           {busy ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Authorising GitFolio AI…
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Authorising Gitoco…
             </>
           ) : (
             <>

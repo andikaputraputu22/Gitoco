@@ -78,7 +78,7 @@ export default function Dashboard() {
             <div className="max-w-xl">
               <h2 className="font-heading text-[19px] font-semibold">Start by connecting GitHub</h2>
               <p className="mt-1.5 text-[14px] leading-relaxed text-muted-foreground">
-                Your workspace is empty. Connect your account, pick your best repositories and let GitFolio AI
+                Your workspace is empty. Connect your account, pick your best repositories and let Gitoco
                 write your portfolio from your actual code.
               </p>
             </div>

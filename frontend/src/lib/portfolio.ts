@@ -243,7 +243,7 @@ export function buildPortfolio(repos: Repo[], template: TemplateId): PortfolioDa
     handle: DEVELOPER.handle,
     githubUrl: DEVELOPER.github,
     githubLabel: `github.com/${DEVELOPER.handle}`,
-    portfolioUrl: `gitfolio.dev/${DEVELOPER.handle}`,
+    portfolioUrl: `gitoco.com/${DEVELOPER.handle}`,
     avatar: DEVELOPER.avatar,
     contactLine: "Available for engineering roles and freelance work",
     skills,

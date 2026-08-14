@@ -19,7 +19,7 @@ export default function MyProjects() {
   return (
     <AppLayout
       title="My Projects"
-      subtitle="Every repository GitFolio AI has analysed, with its AI-generated insight report."
+      subtitle="Every repository Gitoco has analysed, with its AI-generated insight report."
       action={
         <Link to="/repositories" className={buttonVariants() + " rounded-full"} data-testid="projects-add-repos-btn">
           <Github className="mr-2 h-4 w-4" /> {state.connected ? "Import more repositories" : "Connect GitHub"}

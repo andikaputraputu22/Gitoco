@@ -6,7 +6,7 @@ export function Logo({ className, to = "/" }: { className?: string; to?: string 
     <Link
       to={to}
       className={cn("group inline-flex items-center gap-2.5", className)}
-      data-testid="gitfolio-logo"
+      data-testid="gitoco-logo"
     >
       <span className="relative grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-foreground shadow-[0_6px_20px_-8px_var(--primary)]">
         <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -17,7 +17,7 @@ export function Logo({ className, to = "/" }: { className?: string; to?: string 
         </svg>
       </span>
       <span className="whitespace-nowrap font-heading text-[17px] font-semibold tracking-tight">
-        GitFolio<span className="text-primary"> AI</span>
+        Gitoco
       </span>
     </Link>
   );

@@ -54,7 +54,7 @@ export default function PublicPortfolio() {
             {data.portfolioUrl}
           </p>
           <p className="mono text-[12px]" style={{ color: tokens.faint }}>
-            Built with GitFolio AI
+            Built with Gitoco
           </p>
         </div>
       </footer>

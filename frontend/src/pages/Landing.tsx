@@ -33,7 +33,7 @@ const FEATURES = [
 ];
 
 const PIPELINE = [
-  { label: "GitHub Repository", meta: "andikadev/oboeru", tone: "text-muted-foreground" },
+  { label: "GitHub Repository", meta: "andikaputraputu/oboeru", tone: "text-muted-foreground" },
   { label: "AI Analysis", meta: "Clean Architecture · MVVM · Room", tone: "text-primary" },
   { label: "Professional Portfolio", meta: "Published · Advanced complexity", tone: "text-[var(--success)]" },
 ];
@@ -78,7 +78,7 @@ export default function Landing() {
               </span>
             </h1>
             <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-muted-foreground" data-testid="hero-subtext">
-              GitFolio AI analyzes your projects and transforms your code, technologies, and engineering
+              Gitoco analyzes your projects and transforms your code, technologies, and engineering
               experience into a professional portfolio built for recruiters and clients.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
@@ -112,7 +112,7 @@ export default function Landing() {
                 <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#FEBC2E]" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#28C840]" />
-                <span className="mono ml-2 text-[11px] text-slate-500">gitfolio · pipeline</span>
+                <span className="mono ml-2 text-[11px] text-slate-500">gitoco · pipeline</span>
               </div>
               <div className="space-y-4 p-6">
                 {PIPELINE.map((step, i) => (
@@ -225,7 +225,7 @@ export default function Landing() {
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-8 text-[13px] text-muted-foreground">
           <Logo />
-          <p>GitFolio AI — contest prototype. Repository data and AI output are simulated.</p>
+          <p>Gitoco — contest prototype. Repository data and AI output are simulated.</p>
         </div>
       </footer>
     </div>

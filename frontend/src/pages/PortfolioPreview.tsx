@@ -45,7 +45,7 @@ export default function PortfolioPreview() {
           </span>
           <h3 className="mt-5 font-heading text-[18px] font-semibold">Nothing to generate from yet</h3>
           <p className="mx-auto mt-2 max-w-sm text-[14px] leading-relaxed text-muted-foreground">
-            Analyse at least one repository and GitFolio AI will write your portfolio for you.
+            Analyse at least one repository and Gitoco will write your portfolio for you.
           </p>
           <Link to="/repositories" className={buttonVariants() + " mt-6 rounded-full"} data-testid="portfolio-empty-cta">
             Select your best projects

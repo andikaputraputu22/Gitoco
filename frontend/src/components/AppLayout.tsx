@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   Bell,
   Briefcase,
@@ -10,21 +10,12 @@ import {
   Search,
   Settings,
   Sparkles,
-  UserRound,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { DEVELOPER } from "@/lib/mock";
 import { useApp } from "@/lib/store";
@@ -123,7 +114,6 @@ export default function AppLayout({
   action?: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const { stats } = useApp();
 
   return (
     <div className="min-h-screen bg-background lg:grid lg:grid-cols-[264px_1fr]">
@@ -158,57 +148,26 @@ export default function AppLayout({
 
           <div className="ml-auto flex items-center gap-1.5">
             <ThemeToggle testId="theme-toggle-dashboard" />
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <Button variant="ghost" size="icon-sm" className="relative rounded-full text-muted-foreground hover:text-foreground" data-testid="notifications-trigger" aria-label="Notifications">
-                    <Bell className="h-4 w-4" />
-                    <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-                  </Button>
-                }
-              />
-              <DropdownMenuContent align="end" className="w-72">
-                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="flex-col items-start gap-0.5" data-testid="notification-item-1">
-                  <span className="text-[13px] font-medium">Analysis complete</span>
-                  <span className="text-[12px] text-muted-foreground">
-                    {stats.analyzed > 0 ? `${stats.analyzed} project(s) analysed and ready.` : "Connect GitHub to start your first analysis."}
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex-col items-start gap-0.5" data-testid="notification-item-2">
-                  <span className="text-[13px] font-medium">Job Match tip</span>
-                  <span className="text-[12px] text-muted-foreground">Paste a job description to tailor your portfolio.</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <Button variant="ghost" size="sm" className="gap-2 rounded-full pl-1 pr-3" data-testid="user-profile-trigger">
-                    <img src={DEVELOPER.avatar} alt="" className="h-7 w-7 rounded-full object-cover" />
-                    <span className="hidden text-[13px] font-medium sm:inline">{DEVELOPER.name}</span>
-                  </Button>
-                }
-              />
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel className="flex flex-col gap-0.5">
-                  <span>{DEVELOPER.fullName}</span>
-                  <span className="mono text-[11px] font-normal text-muted-foreground">@{DEVELOPER.handle}</span>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem render={<Link to="/settings" />} data-testid="menu-account-settings">
-                  <UserRound className="h-4 w-4" /> Account settings
-                </DropdownMenuItem>
-                <DropdownMenuItem render={<Link to="/portfolio" />} data-testid="menu-view-portfolio">
-                  <Sparkles className="h-4 w-4" /> View portfolio
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem render={<Link to="/" />} data-testid="menu-exit-demo">
-                  Exit demo
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Notifications are a visual demo element only — intentionally inactive. */}
+            <span
+              aria-disabled="true"
+              title="Notifications aren't available in this prototype"
+              className="relative grid size-8 cursor-not-allowed place-items-center rounded-full text-muted-foreground/50"
+              data-testid="notifications-trigger"
+            >
+              <Bell className="h-4 w-4" />
+              <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-primary/50" />
+            </span>
+            {/* Profile menu is intentionally inactive in this prototype. */}
+            <span
+              aria-disabled="true"
+              title="Account menu isn't available in this prototype"
+              className="flex cursor-not-allowed items-center gap-2 rounded-full pl-1 pr-3 opacity-70"
+              data-testid="user-profile-trigger"
+            >
+              <img src={DEVELOPER.avatar} alt="" className="h-7 w-7 rounded-full object-cover" />
+              <span className="hidden text-[13px] font-medium sm:inline">{DEVELOPER.name}</span>
+            </span>
           </div>
         </header>
 
