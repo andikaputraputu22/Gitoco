@@ -56,7 +56,7 @@ export default function Dashboard(): React.ReactElement {
 
   return (
     <AppLayout
-      title={`${greeting()}, ${DEVELOPER.name}`}
+      title={state.connected ? `${greeting()}, ${DEVELOPER.fullName}` : greeting()}
       subtitle="Let's turn your projects into your professional story."
       action={
         state.connected ? (
@@ -217,7 +217,9 @@ export default function Dashboard(): React.ReactElement {
       </section>
 
       <p className="mt-12 text-[12px] text-muted-foreground/70">
-        Demo workspace for {DEVELOPER.fullName} · {REPOS.length} simulated repositories available.
+        {state.connected
+          ? `Demo workspace for ${DEVELOPER.fullName} · ${REPOS.length} simulated repositories available.`
+          : `Demo workspace · ${REPOS.length} simulated repositories available once GitHub is connected.`}
       </p>
     </AppLayout>
   );
