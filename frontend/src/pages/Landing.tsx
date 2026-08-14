@@ -91,7 +91,7 @@ export default function Landing(): React.ReactElement {
             </div>
             <dl className="mt-14 grid max-w-lg grid-cols-3 gap-6 border-t border-border pt-8">
               {[
-                ["10,000+", "projects analyzed"],
+                ["AI-powered", "projects analyzed"],
                 ["Built for", "developers"],
                 ["Ready in", "minutes"],
               ].map(([big, small]) => (
