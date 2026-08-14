@@ -225,7 +225,7 @@ export default function Landing(): React.ReactElement {
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-8 text-[13px] text-muted-foreground">
           <Logo />
-          <p>Gitoco — contest prototype. Repository data and AI output are simulated.</p>
+          <p>Gitoco — Contest Demo · GitHub repository data and AI insights are simulated.</p>
         </div>
       </footer>
     </div>
