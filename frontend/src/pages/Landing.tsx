@@ -68,7 +68,7 @@ export default function Landing(): React.ReactElement {
         <div className="relative mx-auto grid max-w-6xl items-center gap-16 px-5 py-20 lg:grid-cols-[1.05fr_1fr] lg:py-28">
           <div>
             <Badge variant="outline" className="mono gap-1.5 rounded-full border-primary/30 bg-primary/8 py-1 text-[11px] text-primary" data-testid="hero-badge">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" /> DEMO PROTOTYPE · SIMULATED AI
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" /> CONTEST DEMO · SIMULATED AI
             </Badge>
             <h1 className="mt-6 font-heading text-[38px] font-semibold leading-[1.06] sm:text-[52px]" data-testid="hero-headline">
               Turn your GitHub into a portfolio that{" "}
