@@ -62,16 +62,16 @@ Print-only adaptations (deliberate): fixed A4 instead of responsive widths, sing
 
 
 ## Public portfolio URL (simulated)
-- "Publish Portfolio" on `/portfolio` opens `components/PublishDialog.tsx`: 3-step animation (Preparing portfolio -> Creating public page -> Publishing portfolio) -> success "Your portfolio is live!" showing `gitoco.com/<handle>` with **Open Portfolio** (navigates to `/portfolio/<handle>`) and **Copy Link** (writes `https://gitoco.com/<handle>` to the clipboard).
+- "Publish Portfolio" on `/portfolio` opens `components/PublishDialog.tsx`: 3-step animation (Preparing portfolio -> Creating public page -> Publishing portfolio) -> success "Your portfolio is live!" showing `gitoco.com/portfolio/<handle>` with **Open Portfolio** (navigates to `/portfolio/<handle>`) and **Copy Link** (writes `https://gitoco.com/portfolio/<handle>` to the clipboard).
 - Publishing sets `published: true` in local state; the preview then shows a persistent "Live at ..." banner with a View public page link and the button becomes "Republish". `Settings -> Reset demo data` clears it.
 - `pages/PublicPortfolio.tsx` (`/portfolio/:handle`) renders `PortfolioDocumentView` with no dashboard chrome — no sidebar, topbar, template selector or export/publish controls — plus a subtle footer with the portfolio URL and "Built with Gitoco". It uses the same state and selected template as the preview, and is responsive (verified: no horizontal overflow at 390px).
 - If nothing is generated in the session, or the handle doesn't match, it shows an "isn't published" state with a link back to the dashboard. The public URL is simulated: no persistence, no hosting, no backend — it is served from the local session only.
-- Naming deviation from the brief: the brief said `devfolio.ai/andika` and "Built with Devfolio AI", but the app is branded **Gitoco**, so the URL is `gitoco.com/andikaputraputu` (the developer's real handle) and the footer reads "Built with Gitoco".
+- Naming deviation from the brief: the brief said `devfolio.ai/andika` and "Built with Devfolio AI", but the app is branded **Gitoco**, so the URL is `gitoco.com/portfolio/andikaputraputu` (the developer's real handle) and the footer reads "Built with Gitoco".
 
 
 ## Branding & demo identity
 - Product name is **Gitoco** everywhere in user-facing text (landing, logo, nav, dashboard, sidebar, dialogs, empty/loading/success states, public page footer, document title + meta description, PDF `creator` metadata). GitHub is untouched — it remains the external platform being analysed.
-- Demo identity: **I Putu Andika Putra**, `@andikaputraputu`, `andikaputraputu@gitoco.com`, repos under `github.com/andikaputraputu/...`, public URL `gitoco.com/andikaputraputu` (served at `/portfolio/andikaputraputu`). The dashboard greeting uses the short `DEVELOPER.name` ("Andika").
+- Demo identity: **I Putu Andika Putra**, `@andikaputraputu`, `andikaputraputu@gitoco.com`, repos under `github.com/andikaputraputu/...`, public URL `gitoco.com/portfolio/andikaputraputu` (served at `/portfolio/andikaputraputu`). The dashboard greeting uses the short `DEVELOPER.name` ("Andika").
 - Internal `localStorage` keys (`gitfolio.state.v1`, `gitfolio.theme`) were intentionally left alone — they are not user-facing and renaming them would discard existing sessions.
 - **Overview greeting is gated on `state.connected`**: disconnected shows just the time-based greeting ("Good afternoon"); connected shows "Good afternoon, I Putu Andika Putra" (`DEVELOPER.fullName`, no demo-name fallback). The workspace footnote under the Overview follows the same rule.
 - Favicon: `frontend/public/favicon.svg` is the Gitoco mark (blue #2563EB rounded square + the git-graph glyph from `components/Logo.tsx`), also wired as `apple-touch-icon` with a `theme-color` meta. The old template bolt icon is gone.
