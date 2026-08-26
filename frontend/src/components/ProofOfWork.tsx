@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ChevronRight } from "lucide-react";
 import { EvidenceDetailDialog } from "@/components/EngineeringEvidence";
 import type { EvidenceItem } from "@/lib/mock";
 import type { TemplateTokens } from "@/lib/portfolio";
@@ -80,26 +81,30 @@ export function ProofOfWork({
       <p className="mono text-[10px] uppercase tracking-[0.16em]" style={{ color: tokens.faint }}>
         Engineering Evidence
       </p>
-      <ul className="mt-3 space-y-2">
+      <ul className="mt-3 space-y-1">
         {evidence.map((item) => (
-          <li key={item.title} className="text-[12.5px] leading-snug">
-            <span style={{ color: tokens.ink }}>{item.title}</span>
-            <span style={{ color: tokens.body }}> — {item.status}</span>
-            <span className="mono block text-[11.5px]" style={{ color: tokens.faint }}>
-              {item.summary.join(" · ")}
-            </span>
+          <li key={item.title}>
+            <button
+              type="button"
+              onClick={() => setActive(item)}
+              className="group -mx-2 flex w-full cursor-pointer items-start gap-2 rounded-lg px-2 py-1.5 text-left text-[12.5px] leading-snug transition-colors duration-200 hover:bg-black/[0.035]"
+              data-testid={`${testId}-item-${item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+            >
+              <span className="min-w-0 flex-1">
+                <span style={{ color: tokens.ink }}>{item.title}</span>
+                <span style={{ color: tokens.body }}> — {item.status}</span>
+                <span className="mono block text-[11.5px]" style={{ color: tokens.faint }}>
+                  {item.summary.join(" · ")}
+                </span>
+              </span>
+              <ChevronRight
+                className="mt-0.5 size-3.5 shrink-0 opacity-40 transition-opacity duration-200 group-hover:opacity-80"
+                style={{ color: tokens.accent }}
+              />
+            </button>
           </li>
         ))}
       </ul>
-      <button
-        type="button"
-        onClick={() => setActive(evidence[0])}
-        className="mono mt-3 text-[11.5px] underline underline-offset-2 transition-opacity duration-200 hover:opacity-70"
-        style={{ color: tokens.accent }}
-        data-testid={`${testId}-detail-btn`}
-      >
-        View Detailed Evidence
-      </button>
 
       <EvidenceDetailDialog item={active} onOpenChange={(o) => !o && setActive(null)} />
     </div>

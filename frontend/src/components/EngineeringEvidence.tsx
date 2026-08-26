@@ -42,6 +42,53 @@ export function EvidenceStatusBadge({
   );
 }
 
+/** Body of one evidence item: description, patterns, summary and file references. */
+export function EvidenceDetailBody({ item }: { item: EvidenceItem }): React.ReactElement {
+  return (
+    <>
+      {item.patterns.length > 0 && (
+        <div className="mt-4" data-testid="evidence-detail-patterns">
+          <p className="mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+            Detected patterns
+          </p>
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            {item.patterns.map((pattern) => (
+              <Badge key={pattern} variant="secondary" className="text-[11.5px]">
+                {pattern}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="mt-4" data-testid="evidence-detail-summary">
+        <p className="mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+          Evidence summary
+        </p>
+        <p className="mono mt-2 text-[12.5px]">{item.summary.join(" · ")}</p>
+      </div>
+
+      {item.files.length > 0 && (
+        <div className="mt-4" data-testid="evidence-detail-files">
+          <p className="mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+            Repository evidence
+          </p>
+          <ul className="mt-2.5 space-y-2">
+            {item.files.map((f) => (
+              <li key={f.path} className="rounded-xl border border-border bg-muted/40 p-3">
+                <p className="mono flex items-center gap-2 text-[12.5px]">
+                  <FileCode2 className="h-3.5 w-3.5 shrink-0 text-primary" /> {f.path}
+                </p>
+                <p className="mt-1 pl-5.5 text-[12.5px] text-muted-foreground">{f.note}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </>
+  );
+}
+
 export function EvidenceDetailDialog({
   item,
   onOpenChange,
@@ -51,7 +98,7 @@ export function EvidenceDetailDialog({
 }): React.ReactElement {
   return (
     <Dialog open={!!item} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg" data-testid="evidence-detail-dialog">
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg" data-testid="evidence-detail-dialog">
         {item && (
           <>
             <DialogHeader>
@@ -64,51 +111,62 @@ export function EvidenceDetailDialog({
               <DialogDescription>{item.description}</DialogDescription>
             </DialogHeader>
 
-            {item.patterns.length > 0 && (
-              <div data-testid="evidence-detail-patterns">
-                <p className="mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                  Detected patterns
-                </p>
-                <div className="mt-2.5 flex flex-wrap gap-1.5">
-                  {item.patterns.map((p) => (
-                    <Badge key={p} variant="secondary" className="text-[11.5px]">
-                      {p}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
+            <EvidenceDetailBody item={item} />
 
-            <div data-testid="evidence-detail-summary">
-              <p className="mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                Evidence summary
-              </p>
-              <p className="mono mt-2 text-[12.5px]">{item.summary.join(" · ")}</p>
-            </div>
-
-            {item.files.length > 0 && (
-              <div data-testid="evidence-detail-files">
-                <p className="mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                  Repository evidence
-                </p>
-                <ul className="mt-2.5 space-y-2">
-                  {item.files.map((f) => (
-                    <li key={f.path} className="rounded-xl border border-border bg-muted/40 p-3">
-                      <p className="mono flex items-center gap-2 text-[12.5px]">
-                        <FileCode2 className="h-3.5 w-3.5 shrink-0 text-primary" /> {f.path}
-                      </p>
-                      <p className="mt-1 pl-5.5 text-[12.5px] text-muted-foreground">{f.note}</p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <p className="text-[11.5px] text-muted-foreground/70">
+            <p className="mt-4 text-[11.5px] text-muted-foreground/70">
               Repository evidence is simulated for this contest demo.
             </p>
           </>
         )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/** Every evidence item for one project, used by the public portfolio's detailed view. */
+export function EvidenceListDialog({
+  open,
+  onOpenChange,
+  items,
+  projectName,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  items: EvidenceItem[];
+  projectName: string;
+}): React.ReactElement {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg" data-testid="evidence-list-dialog">
+        <DialogHeader>
+          <DialogTitle className="font-heading text-[19px]" data-testid="evidence-list-title">
+            Engineering Evidence — {projectName}
+          </DialogTitle>
+          <DialogDescription>
+            Evidence found in the repository that supports Gitoco's engineering insights.
+          </DialogDescription>
+        </DialogHeader>
+
+        <ul className="space-y-4">
+          {items.map((item) => (
+            <li
+              key={item.title}
+              className="rounded-xl border border-border bg-muted/30 p-4"
+              data-testid={`evidence-list-item-${item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+            >
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h3 className="text-[14px] font-medium">{item.title}</h3>
+                <EvidenceStatusBadge status={item.status} />
+              </div>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">{item.description}</p>
+              <EvidenceDetailBody item={item} />
+            </li>
+          ))}
+        </ul>
+
+        <p className="text-[11.5px] text-muted-foreground/70">
+          Repository evidence is simulated for this contest demo.
+        </p>
       </DialogContent>
     </Dialog>
   );
