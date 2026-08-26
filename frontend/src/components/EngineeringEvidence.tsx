@@ -47,7 +47,7 @@ export function EvidenceDetailBody({ item }: { item: EvidenceItem }): React.Reac
   return (
     <>
       {item.patterns.length > 0 && (
-        <div className="mt-4" data-testid="evidence-detail-patterns">
+        <div className="mt-6" data-testid="evidence-detail-patterns">
           <p className="mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
             Detected patterns
           </p>
@@ -61,7 +61,7 @@ export function EvidenceDetailBody({ item }: { item: EvidenceItem }): React.Reac
         </div>
       )}
 
-      <div className="mt-4" data-testid="evidence-detail-summary">
+      <div className="mt-6" data-testid="evidence-detail-summary">
         <p className="mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
           Evidence summary
         </p>
@@ -69,13 +69,13 @@ export function EvidenceDetailBody({ item }: { item: EvidenceItem }): React.Reac
       </div>
 
       {item.files.length > 0 && (
-        <div className="mt-4" data-testid="evidence-detail-files">
+        <div className="mt-6" data-testid="evidence-detail-files">
           <p className="mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
             Repository evidence
           </p>
           <ul className="mt-2.5 space-y-2">
             {item.files.map((f) => (
-              <li key={f.path} className="rounded-xl border border-border bg-muted/40 p-3">
+              <li key={f.path} className="rounded-xl border border-border bg-muted/40 p-3.5">
                 <p className="mono flex items-center gap-2 text-[12.5px]">
                   <FileCode2 className="h-3.5 w-3.5 shrink-0 text-primary" /> {f.path}
                 </p>
@@ -98,11 +98,14 @@ export function EvidenceDetailDialog({
 }): React.ReactElement {
   return (
     <Dialog open={!!item} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg" data-testid="evidence-detail-dialog">
+      <DialogContent
+        className="max-h-[85vh] gap-0 overflow-y-auto p-5 sm:max-w-lg sm:p-9 [&>button]:top-5 [&>button]:right-5 sm:[&>button]:top-7 sm:[&>button]:right-7"
+        data-testid="evidence-detail-dialog"
+      >
         {item && (
           <>
-            <DialogHeader>
-              <div className="mb-1 flex flex-wrap items-center gap-2.5">
+            <DialogHeader className="pr-8">
+              <div className="mb-1.5 flex flex-wrap items-center gap-2.5">
                 <DialogTitle className="font-heading text-[19px]" data-testid="evidence-detail-title">
                   {item.title}
                 </DialogTitle>
@@ -111,9 +114,11 @@ export function EvidenceDetailDialog({
               <DialogDescription>{item.description}</DialogDescription>
             </DialogHeader>
 
-            <EvidenceDetailBody item={item} />
+            <div className="mt-1">
+              <EvidenceDetailBody item={item} />
+            </div>
 
-            <p className="mt-4 text-[11.5px] text-muted-foreground/70">
+            <p className="mt-7 text-[11.5px] text-muted-foreground/70">
               Repository evidence is simulated for this contest demo.
             </p>
           </>
