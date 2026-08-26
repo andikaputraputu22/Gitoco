@@ -20,15 +20,15 @@ const STEPS = [
   { n: "01", title: "Connect GitHub", body: "Link your account and we pull in your public repositories with their metadata." },
   { n: "02", title: "Select your best projects", body: "Pick the work you actually want recruiters and clients to read about." },
   { n: "03", title: "Let AI understand your work", body: "We detect technologies, architecture patterns, features and engineering practices." },
-  { n: "04", title: "Generate your portfolio", body: "Get a polished portfolio plus resume-ready descriptions in three templates." },
+  { n: "04", title: "Generate your portfolio", body: "Publish a professional portfolio that showcases your projects, engineering strengths, and evidence — ready for recruiters and clients." },
 ];
 
 const FEATURES = [
   { icon: ScanSearch, title: "AI Project Analysis", body: "Every repository is read for purpose, structure and depth — not just a README summary.", span: "lg:col-span-2" },
   { icon: Layers, title: "Automatic Tech Stack Detection", body: "Languages, frameworks and libraries surfaced as clean, recruiter-readable badges." },
-  { icon: BrainCircuit, title: "Engineering Insights", body: "Architecture patterns, state management and testing practices called out explicitly." },
+  { icon: BrainCircuit, title: "Engineering Evidence", body: "Go beyond skill lists. Gitoco connects engineering insights to evidence found in a developer's project structure and implementation." },
   { icon: Sparkles, title: "Portfolio Generation", body: "A real portfolio site with three switchable templates, generated from your projects.", span: "lg:col-span-2" },
-  { icon: FileText, title: "Resume-ready Descriptions", body: "Bullet points you can paste straight into a CV or LinkedIn profile." },
+  { icon: FileText, title: "Clearer Hiring Context", body: "Help recruiters and hiring teams understand what a developer has actually built without digging through repositories manually." },
   { icon: Target, title: "Job Matching", body: "Paste a job description and see your match score, strengths and gaps." },
 ];
 
@@ -78,8 +78,9 @@ export default function Landing(): React.ReactElement {
               </span>
             </h1>
             <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-muted-foreground" data-testid="hero-subtext">
-              Gitoco analyzes your projects and transforms your code, technologies, and engineering
-              experience into a professional portfolio built for recruiters and clients.
+              Gitoco analyzes your projects, engineering decisions, and technical evidence to build a
+              professional portfolio that helps you showcase your work — and gives hiring teams
+              clearer context to understand it.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <Link to="/dashboard" className={buttonVariants({ size: "lg" }) + " rounded-full px-7"} data-testid="build-my-portfolio-btn">
@@ -92,7 +93,7 @@ export default function Landing(): React.ReactElement {
             <dl className="mt-14 grid max-w-lg grid-cols-3 gap-6 border-t border-border pt-8">
               {[
                 ["AI-powered", "projects analyzed"],
-                ["Built for", "developers"],
+                ["Developer-first.", "Hiring-ready."],
                 ["Ready in", "minutes"],
               ].map(([big, small]) => (
                 <div key={small}>
@@ -177,8 +178,12 @@ export default function Landing(): React.ReactElement {
             <div className="max-w-xl">
               <p className="mono text-[12px] uppercase tracking-[0.16em] text-primary">Features</p>
               <h2 className="mt-3 font-heading text-[30px] font-semibold leading-tight sm:text-[36px]">
-                Everything a recruiter needs to say yes.
+                Don't just list your skills. Show the work behind them.
               </h2>
+              <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
+                Gitoco surfaces engineering evidence from your projects, helping developers build more
+                credible portfolios and giving hiring teams clearer context.
+              </p>
             </div>
             <Link to="/dashboard" className={buttonVariants({ variant: "outline" }) + " rounded-full"} data-testid="features-cta-btn">
               Try the demo <ArrowRight className="ml-1.5 h-4 w-4" />
