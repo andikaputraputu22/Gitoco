@@ -39,7 +39,7 @@ const PIPELINE = [
 ];
 
 const sec =
-  " cursor-pointer rounded-full border border-foreground/25 bg-background text-foreground hover:border-foreground/45 hover:bg-foreground/[0.06] focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-white/20 dark:bg-transparent dark:hover:border-white/35 dark:hover:bg-white/10";
+  " cursor-pointer rounded-full border border-foreground/25! bg-background text-foreground hover:border-foreground/45! hover:bg-foreground/[0.06] focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-white/20! dark:bg-transparent dark:hover:border-white/35! dark:hover:bg-white/10";
 
 export default function Landing(): React.ReactElement {
   return (
@@ -54,7 +54,7 @@ export default function Landing(): React.ReactElement {
           </nav>
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle testId="theme-toggle-landing" />
-            <Link to="/dashboard" className={buttonVariants({ variant: "ghost", size: "sm" }) + " cursor-pointer rounded-full border border-foreground/20 text-foreground hover:border-foreground/40 hover:bg-foreground/[0.06] focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-white/15 dark:hover:border-white/30 dark:hover:bg-white/10"} data-testid="sign-in-btn">
+            <Link to="/dashboard" className={buttonVariants({ variant: "ghost", size: "sm" }) + " cursor-pointer rounded-full border border-foreground/20! text-foreground hover:border-foreground/40! hover:bg-foreground/[0.06] focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-white/15! dark:hover:border-white/30! dark:hover:bg-white/10"} data-testid="sign-in-btn">
               Sign In
             </Link>
             <Link to="/dashboard" className={buttonVariants({ size: "sm" }) + " rounded-full"} data-testid="get-started-btn">
