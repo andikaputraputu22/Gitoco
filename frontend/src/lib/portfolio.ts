@@ -1,5 +1,5 @@
 import { DEVELOPER, getInsight } from "@/lib/mock";
-import type { Repo } from "@/lib/mock";
+import type { EvidenceItem, Repo } from "@/lib/mock";
 import type { TemplateId } from "@/lib/store";
 
 /**
@@ -24,6 +24,8 @@ export interface PortfolioProject {
   features: string[];
   highlights: string[];
   githubUrl: string;
+  /** shared Engineering Evidence, reused from the AI insight */
+  evidence: EvidenceItem[];
 }
 
 export interface PortfolioData {
@@ -230,6 +232,7 @@ export function buildPortfolio(repos: Repo[], template: TemplateId): PortfolioDa
       features: (insight?.features ?? []).slice(0, 4),
       highlights: [...(insight?.strengths ?? []).slice(0, 3), ...(insight?.architecture ?? [])],
       githubUrl: repo.githubUrl,
+      evidence: insight?.evidence ?? [],
     };
   });
 

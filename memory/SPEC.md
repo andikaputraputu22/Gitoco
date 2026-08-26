@@ -89,5 +89,12 @@ Print-only adaptations (deliberate): fixed A4 instead of responsive widths, sing
 - `pages/PortfolioPreview.tsx`: `repos` and `data` are memoised on `state.analyzedIds` / `state.template` so `buildDocument` has a stable identity and the export effect can't restart on unrelated re-renders.
 - Review items deliberately not actioned: the reported "missing hook dependencies" were false positives (module constants, imports, types, globals and setState identities are not valid deps — `yarn lint` reports zero hook warnings), and the localStorage "sensitive data" finding does not apply: only the colour theme and mock demo state are stored, and this prototype has no backend, auth or real user data.
 
+
+## Engineering Evidence (Proof of Work)
+- Data lives on the existing mock insights: `Insight.evidence: EvidenceItem[]` in `lib/mock.ts` (`{ title, status, description, summary[], patterns[], files[{path, note}] }`). Statuses are `Strong Evidence | Evidence Found | Limited Evidence | Not Detected` — never "verified", since repository analysis is simulated. Populated for Oboeru, Ananka and NewsStream; the other demo repos have `[]` and the UI hides itself.
+- `components/EngineeringEvidence.tsx`: `EngineeringEvidenceSection` (compact rows: claim + status badge + explanation + summary + "View Evidence") rendered on `/insights/:id` between Engineering strengths and Resume-ready descriptions, plus `EvidenceDetailDialog` (claim, status, detected patterns, evidence summary, repository file references) and `EvidenceStatusBadge`.
+- `components/ProofOfWork.tsx`: compact block inside the portfolio document, coloured from the active template tokens. `variant="indicator"` (dashboard preview) shows "N engineering skills with evidence" + "View Proof of Work"; `variant="summary"` (public portfolio, passed via `PortfolioDocumentView evidenceVariant="summary"`) shows the claim/status/summary list + "View Detailed Evidence". Both reuse `EvidenceDetailDialog`.
+- Evidence flows into the portfolio through `PortfolioProject.evidence` in `buildPortfolio()`, so all three surfaces share one copy of the content. The PDF export is unchanged, and the contest disclaimer is untouched.
+
 ## Credentials
 None — no login gate anywhere.

@@ -42,7 +42,7 @@ export default function PublicPortfolio(): React.ReactElement {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: tokens.page }} data-testid="public-portfolio-page">
-      <PortfolioDocumentView data={data} />
+      <PortfolioDocumentView data={data} evidenceVariant="summary" />
 
       <footer
         className="px-8 py-10 sm:px-14"

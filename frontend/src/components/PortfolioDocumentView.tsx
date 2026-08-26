@@ -1,5 +1,6 @@
 import { ExternalLink, Mail, MapPin } from "lucide-react";
 import { Github } from "@/components/GithubIcon";
+import { ProofOfWork } from "@/components/ProofOfWork";
 import { TEMPLATES, heroLine, projectHeading } from "@/lib/portfolio";
 import type { PortfolioData, PortfolioProject, TemplateConfig } from "@/lib/portfolio";
 
@@ -48,7 +49,7 @@ function HighlightList({ t, project }: { t: TemplateConfig; project: PortfolioPr
   );
 }
 
-function MinimalTemplate({ data }: { data: PortfolioData }) {
+function MinimalTemplate({ data, evidenceVariant }: { data: PortfolioData; evidenceVariant: EvidenceVariant }) {
   const t = TEMPLATES.minimal;
   const k = t.tokens;
   return (
@@ -110,6 +111,12 @@ function MinimalTemplate({ data }: { data: PortfolioData }) {
                 <p className="mono mt-3 text-[12px]" style={{ color: k.faint }}>
                   {p.tech.join(", ")}
                 </p>
+                <ProofOfWork
+                  evidence={p.evidence}
+                  tokens={k}
+                  variant={evidenceVariant}
+                  testId={`proof-of-work-${p.id}`}
+                />
               </article>
             ))}
           </div>
@@ -135,7 +142,7 @@ function MinimalTemplate({ data }: { data: PortfolioData }) {
   );
 }
 
-function ProfessionalTemplate({ data }: { data: PortfolioData }) {
+function ProfessionalTemplate({ data, evidenceVariant }: { data: PortfolioData; evidenceVariant: EvidenceVariant }) {
   const t = TEMPLATES.professional;
   const k = t.tokens;
   return (
@@ -238,6 +245,12 @@ function ProfessionalTemplate({ data }: { data: PortfolioData }) {
                     </span>
                   ))}
                 </div>
+                <ProofOfWork
+                  evidence={p.evidence}
+                  tokens={k}
+                  variant={evidenceVariant}
+                  testId={`proof-of-work-${p.id}`}
+                />
               </article>
             ))}
           </div>
@@ -263,7 +276,7 @@ function ProfessionalTemplate({ data }: { data: PortfolioData }) {
   );
 }
 
-function ModernTemplate({ data }: { data: PortfolioData }) {
+function ModernTemplate({ data, evidenceVariant }: { data: PortfolioData; evidenceVariant: EvidenceVariant }) {
   const t = TEMPLATES.modern;
   const k = t.tokens;
   return (
@@ -327,6 +340,12 @@ function ModernTemplate({ data }: { data: PortfolioData }) {
                 <p className="mono mt-4 text-[12px]" style={{ color: k.faint }}>
                   {p.tech.join(" / ")}
                 </p>
+                <ProofOfWork
+                  evidence={p.evidence}
+                  tokens={k}
+                  variant={evidenceVariant}
+                  testId={`proof-of-work-${p.id}`}
+                />
               </article>
             ))}
           </div>
@@ -355,8 +374,17 @@ function ModernTemplate({ data }: { data: PortfolioData }) {
   );
 }
 
-export function PortfolioDocumentView({ data }: { data: PortfolioData }) {
-  if (data.template === "minimal") return <MinimalTemplate data={data} />;
-  if (data.template === "modern") return <ModernTemplate data={data} />;
-  return <ProfessionalTemplate data={data} />;
+export type EvidenceVariant = "indicator" | "summary";
+
+export function PortfolioDocumentView({
+  data,
+  evidenceVariant = "indicator",
+}: {
+  data: PortfolioData;
+  /** "summary" on the public portfolio, "indicator" in the dashboard preview */
+  evidenceVariant?: EvidenceVariant;
+}): React.ReactElement {
+  if (data.template === "minimal") return <MinimalTemplate data={data} evidenceVariant={evidenceVariant} />;
+  if (data.template === "modern") return <ModernTemplate data={data} evidenceVariant={evidenceVariant} />;
+  return <ProfessionalTemplate data={data} evidenceVariant={evidenceVariant} />;
 }

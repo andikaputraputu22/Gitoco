@@ -15,6 +15,24 @@ export interface Repo {
   recommended: boolean;
 }
 
+export type EvidenceStatus = "Strong Evidence" | "Evidence Found" | "Limited Evidence" | "Not Detected";
+
+export interface EvidenceFile {
+  path: string;
+  note: string;
+}
+
+/** Simulated repository evidence backing one engineering claim. */
+export interface EvidenceItem {
+  title: string;
+  status: EvidenceStatus;
+  description: string;
+  /** short "3 layers · 7 use cases" style facts */
+  summary: string[];
+  patterns: string[];
+  files: EvidenceFile[];
+}
+
 export interface Insight {
   repoId: string;
   title: string;
@@ -27,6 +45,7 @@ export interface Insight {
   roles: string[];
   resumeBullets: string[];
   scores: { architecture: number; codeQuality: number; impact: number };
+  evidence: EvidenceItem[];
 }
 
 export const DEVELOPER = {
@@ -154,6 +173,58 @@ const INSIGHTS: Insight[] = [
       "Implemented Room-backed local persistence with Firebase sync so study progress survives offline usage and device changes.",
     ],
     scores: { architecture: 92, codeQuality: 88, impact: 84 },
+    evidence: [
+      {
+        title: "Clean Architecture",
+        status: "Strong Evidence",
+        description:
+          "Clear separation between presentation, domain, and data responsibilities was detected.",
+        summary: ["3 architectural layers", "7 use cases", "4 repository implementations"],
+        patterns: ["Layered packages", "Use-case boundaries", "Dependency inversion"],
+        files: [
+          { path: "presentation/", note: "UI and ViewModel layer" },
+          { path: "domain/usecase/", note: "Business logic and use cases" },
+          { path: "data/repository/", note: "Repository implementations" },
+        ],
+      },
+      {
+        title: "Dependency Injection",
+        status: "Strong Evidence",
+        description:
+          "Hilt-based dependency injection patterns were detected across multiple components.",
+        summary: ["3 Hilt modules", "18 injected dependencies"],
+        patterns: ["Hilt modules", "Constructor injection", "ViewModel injection"],
+        files: [
+          { path: "di/DatabaseModule.kt", note: "Provides local database dependencies" },
+          { path: "di/NetworkModule.kt", note: "Provides network/API dependencies" },
+          { path: "di/RepositoryModule.kt", note: "Binds repository implementations" },
+          { path: "data/repository/VocabularyRepositoryImpl.kt", note: "Uses constructor-injected dependencies" },
+        ],
+      },
+      {
+        title: "Offline Persistence",
+        status: "Evidence Found",
+        description: "Room-based local persistence was detected.",
+        summary: ["4 entities", "3 DAOs", "1 Room database"],
+        patterns: ["Room entities", "DAO queries", "Local source of truth"],
+        files: [
+          { path: "data/local/AppDatabase.kt", note: "Room database definition" },
+          { path: "data/local/VocabularyDao.kt", note: "Vocabulary queries" },
+          { path: "data/local/GrammarDao.kt", note: "Grammar queries" },
+        ],
+      },
+      {
+        title: "Automated Testing",
+        status: "Limited Evidence",
+        description: "Some automated tests were detected, but testing evidence is limited.",
+        summary: ["12 tests detected"],
+        patterns: ["ViewModel tests", "Repository tests"],
+        files: [
+          { path: "test/viewmodel/", note: "ViewModel unit tests" },
+          { path: "test/repository/", note: "Repository unit tests" },
+        ],
+      },
+    ],
   },
   {
     repoId: "ananka",
@@ -184,6 +255,60 @@ const INSIGHTS: Insight[] = [
       "Used server components and query-level caching to keep discovery pages fast and SEO-indexable.",
     ],
     scores: { architecture: 86, codeQuality: 85, impact: 81 },
+    evidence: [
+      {
+        title: "Component Architecture",
+        status: "Strong Evidence",
+        description:
+          "A reusable component layer with shared UI primitives and server components was detected.",
+        summary: ["34 components", "9 shared primitives", "6 route groups"],
+        patterns: ["Server components", "Composition over inheritance", "Shared design system"],
+        files: [
+          { path: "components/ui/", note: "Shared design-system primitives" },
+          { path: "app/(marketing)/", note: "Public discovery route group" },
+          { path: "app/(dashboard)/", note: "Vendor dashboard route group" },
+        ],
+      },
+      {
+        title: "Database Modelling",
+        status: "Strong Evidence",
+        description: "A normalised relational schema with typed data access was detected.",
+        summary: ["11 tables", "14 relations", "8 migrations"],
+        patterns: ["Normalised schema", "Typed queries", "Migration history"],
+        files: [
+          { path: "prisma/schema.prisma", note: "Vendors, packages and availability models" },
+          { path: "prisma/migrations/", note: "Incremental schema migrations" },
+          { path: "lib/db/queries.ts", note: "Typed query helpers" },
+        ],
+      },
+      {
+        title: "API Integration",
+        status: "Evidence Found",
+        description: "Server-side route handlers and typed data fetching were detected.",
+        summary: ["12 route handlers", "Typed responses"],
+        patterns: ["Route handlers", "Input validation", "Server-side fetching"],
+        files: [
+          { path: "app/api/vendors/route.ts", note: "Vendor search endpoint" },
+          { path: "app/api/enquiries/route.ts", note: "Enquiry submission endpoint" },
+        ],
+      },
+      {
+        title: "Automated Testing",
+        status: "Limited Evidence",
+        description: "A small number of component and utility tests were detected.",
+        summary: ["9 tests detected"],
+        patterns: ["Component tests", "Utility tests"],
+        files: [{ path: "__tests__/", note: "Component and helper tests" }],
+      },
+      {
+        title: "CI/CD",
+        status: "Not Detected",
+        description: "No continuous integration or deployment configuration was detected.",
+        summary: ["No pipeline configuration found"],
+        patterns: [],
+        files: [],
+      },
+    ],
   },
   {
     repoId: "newsstream",
@@ -214,6 +339,61 @@ const INSIGHTS: Insight[] = [
       "Modularised features behind Hilt-provided repositories to keep build times and ownership boundaries clean.",
     ],
     scores: { architecture: 84, codeQuality: 83, impact: 78 },
+    evidence: [
+      {
+        title: "MVVM",
+        status: "Strong Evidence",
+        description:
+          "ViewModels exposing immutable state to lifecycle-aware collectors were detected.",
+        summary: ["9 ViewModels", "Unidirectional state"],
+        patterns: ["StateFlow exposure", "Lifecycle-aware collection", "Single source of state"],
+        files: [
+          { path: "feature/feed/FeedViewModel.kt", note: "Feed state and paging events" },
+          { path: "feature/player/PlayerViewModel.kt", note: "Playback state handling" },
+        ],
+      },
+      {
+        title: "Media Handling",
+        status: "Strong Evidence",
+        description: "Media3-based adaptive playback with background support was detected.",
+        summary: ["1 media session", "Background playback", "Adaptive streaming"],
+        patterns: ["ExoPlayer setup", "MediaSessionService", "Playback state restore"],
+        files: [
+          { path: "player/PlaybackService.kt", note: "Media session and background playback" },
+          { path: "player/PlayerManager.kt", note: "Adaptive streaming configuration" },
+        ],
+      },
+      {
+        title: "API Integration",
+        status: "Evidence Found",
+        description: "Retrofit interfaces with typed responses and paging were detected.",
+        summary: ["3 API services", "Paged responses"],
+        patterns: ["Retrofit services", "DTO mapping", "Pagination"],
+        files: [
+          { path: "data/remote/NewsApi.kt", note: "News endpoints and query params" },
+          { path: "data/remote/dto/", note: "Response DTOs and mappers" },
+        ],
+      },
+      {
+        title: "Offline Persistence",
+        status: "Evidence Found",
+        description: "Room caching for offline article reading was detected.",
+        summary: ["3 entities", "2 DAOs"],
+        patterns: ["Room cache", "Cache-then-network"],
+        files: [
+          { path: "data/local/NewsDatabase.kt", note: "Room database definition" },
+          { path: "data/local/ArticleDao.kt", note: "Cached article queries" },
+        ],
+      },
+      {
+        title: "Automated Testing",
+        status: "Limited Evidence",
+        description: "A few unit tests around mapping and repositories were detected.",
+        summary: ["7 tests detected"],
+        patterns: ["Mapper tests", "Repository tests"],
+        files: [{ path: "test/", note: "Unit tests for mappers and repositories" }],
+      },
+    ],
   },
   {
     repoId: "kanjiflow",
@@ -240,6 +420,7 @@ const INSIGHTS: Insight[] = [
       "Built custom canvas stroke-order animations for kanji practice.",
     ],
     scores: { architecture: 78, codeQuality: 76, impact: 64 },
+    evidence: [],
   },
   {
     repoId: "warungapi",
@@ -268,6 +449,7 @@ const INSIGHTS: Insight[] = [
       "Wrote aggregate reporting queries producing daily sales summaries over PostgreSQL.",
     ],
     scores: { architecture: 75, codeQuality: 79, impact: 62 },
+    evidence: [],
   },
   {
     repoId: "dotfiles",
@@ -282,6 +464,7 @@ const INSIGHTS: Insight[] = [
     roles: ["Software Engineer"],
     resumeBullets: ["Automated a reproducible development environment bootstrap across machines."],
     scores: { architecture: 58, codeQuality: 70, impact: 40 },
+    evidence: [],
   },
 ];
 

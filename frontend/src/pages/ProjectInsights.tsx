@@ -12,6 +12,7 @@ import {
   Wrench,
 } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
+import { EngineeringEvidenceSection } from "@/components/EngineeringEvidence";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { getInsight, getRepo } from "@/lib/mock";
@@ -140,6 +141,8 @@ export default function ProjectInsights(): React.ReactElement {
               </ul>
             </Panel>
           </div>
+
+          <EngineeringEvidenceSection evidence={insight.evidence} />
 
           <Panel title="Resume-ready descriptions" icon={ListChecks} testId="insight-resume-panel">
             <ul className="space-y-3">
