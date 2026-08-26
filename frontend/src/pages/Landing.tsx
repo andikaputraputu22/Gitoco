@@ -38,6 +38,9 @@ const PIPELINE = [
   { label: "Professional Portfolio", meta: "Published · Advanced complexity", tone: "text-[var(--success)]" },
 ];
 
+const sec =
+  " rounded-full border-foreground/15 text-foreground hover:border-foreground/30 hover:bg-foreground/[0.05] dark:border-white/20 dark:hover:border-white/35 dark:hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-primary/40 cursor-pointer";
+
 export default function Landing(): React.ReactElement {
   return (
     <div className="min-h-screen bg-background">
@@ -51,7 +54,7 @@ export default function Landing(): React.ReactElement {
           </nav>
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle testId="theme-toggle-landing" />
-            <Link to="/dashboard" className={buttonVariants({ variant: "ghost", size: "sm" })} data-testid="sign-in-btn">
+            <Link to="/dashboard" className={buttonVariants({ variant: "ghost", size: "sm" }) + " rounded-full border border-foreground/12 text-foreground hover:border-foreground/25 hover:bg-foreground/[0.05] dark:border-white/15 dark:hover:border-white/30 dark:hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-primary/40 cursor-pointer"} data-testid="sign-in-btn">
               Sign In
             </Link>
             <Link to="/dashboard" className={buttonVariants({ size: "sm" }) + " rounded-full"} data-testid="get-started-btn">
@@ -86,7 +89,7 @@ export default function Landing(): React.ReactElement {
               <Link to="/dashboard" className={buttonVariants({ size: "lg" }) + " rounded-full px-7"} data-testid="build-my-portfolio-btn">
                 Build My Portfolio <ArrowRight className="ml-1.5 h-4 w-4" />
               </Link>
-              <a href="#how-it-works" className={buttonVariants({ variant: "outline", size: "lg" }) + " rounded-full px-7"} data-testid="see-how-it-works-btn">
+              <a href="#how-it-works" className={buttonVariants({ variant: "outline", size: "lg" }) + " px-7" + sec} data-testid="see-how-it-works-btn">
                 See How It Works
               </a>
             </div>
@@ -220,7 +223,7 @@ export default function Landing(): React.ReactElement {
             <Link to="/dashboard" className={buttonVariants({ size: "lg" }) + " rounded-full px-7"} data-testid="final-cta-btn">
               <Github className="mr-2 h-4 w-4" /> Build My Portfolio
             </Link>
-            <Link to="/job-match" className={buttonVariants({ variant: "outline", size: "lg" }) + " rounded-full px-7"} data-testid="final-cta-job-match-btn">
+            <Link to="/job-match" className={buttonVariants({ variant: "outline", size: "lg" }) + " px-7" + sec} data-testid="final-cta-job-match-btn">
               Try Job Match
             </Link>
           </div>
