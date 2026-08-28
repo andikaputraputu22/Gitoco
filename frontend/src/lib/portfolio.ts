@@ -26,6 +26,8 @@ export interface PortfolioProject {
   githubUrl: string;
   /** shared Engineering Evidence, reused from the AI insight */
   evidence: EvidenceItem[];
+  /** hidden projects are filtered out of the document before render/export */
+  hidden?: boolean;
 }
 
 export interface PortfolioData {
@@ -207,10 +209,59 @@ export function projectHeading(cfg: TemplateConfig, p: PortfolioProject): string
 
 /** Modern's hero merges title + summary into one line; both surfaces use this. */
 export function heroLine(data: PortfolioData): string {
-  return `${data.title} — ${data.summary}`;
+  return data.summary ? `${data.title} — ${data.summary}` : data.title;
 }
 
-export function buildPortfolio(repos: Repo[], template: TemplateId): PortfolioData {
+
+/* ------------------------------------------------------------------ *
+ * Manual edits (Edit Portfolio)
+ *
+ * The AI/mock generated document is the base; `PortfolioEdits` is a thin
+ * override layer stored in the app state (localStorage). `buildPortfolio`
+ * applies it, so the live preview, the public portfolio and the PDF export
+ * all read the same edited document.
+ * ------------------------------------------------------------------ */
+
+export interface ProjectEdit {
+  title?: string;
+  blurb?: string;
+  tech?: string[];
+  hidden?: boolean;
+}
+
+export interface PortfolioSectionFlags {
+  summary: boolean;
+  skills: boolean;
+  work: boolean;
+  evidence: boolean;
+}
+
+export interface PortfolioEdits {
+  name?: string;
+  title?: string;
+  location?: string;
+  email?: string;
+  handle?: string;
+  summary?: string;
+  /** null/undefined = use the generated skill list */
+  skills?: string[];
+  projects: Record<string, ProjectEdit>;
+  /** project ids in display order; unknown ids are ignored, missing ids append */
+  order: string[];
+  sections: PortfolioSectionFlags;
+}
+
+export const DEFAULT_EDITS: PortfolioEdits = {
+  projects: {},
+  order: [],
+  sections: { summary: true, skills: true, work: true, evidence: true },
+};
+
+export function buildPortfolio(
+  repos: Repo[],
+  template: TemplateId,
+  edits: PortfolioEdits = DEFAULT_EDITS,
+): PortfolioData {
   const skills: string[] = [];
   const seen = new Set<string>();
 
@@ -223,33 +274,54 @@ export function buildPortfolio(repos: Repo[], template: TemplateId): PortfolioDa
         skills.push(t);
       }
     });
+    const edit = edits.projects[repo.id] ?? {};
     return {
       id: repo.id,
-      name: repo.name,
-      title: insight?.title ?? repo.name,
-      blurb: insight?.resumeBullets[0] ?? repo.description,
-      tech,
+      name: edit.title ?? repo.name,
+      title: edit.title ?? insight?.title ?? repo.name,
+      blurb: edit.blurb ?? insight?.resumeBullets[0] ?? repo.description,
+      tech: edit.tech ?? tech,
       features: (insight?.features ?? []).slice(0, 4),
       highlights: [...(insight?.strengths ?? []).slice(0, 3), ...(insight?.architecture ?? [])],
       githubUrl: repo.githubUrl,
-      evidence: insight?.evidence ?? [],
+      evidence: edits.sections.evidence ? (insight?.evidence ?? []) : [],
+      hidden: edit.hidden === true,
     };
   });
 
+  const ordered = orderProjects(projects, edits.order).filter((p) => !p.hidden);
+  const handle = edits.handle?.trim() || DEVELOPER.handle;
+
   return {
     template,
-    name: DEVELOPER.fullName,
-    title: DEVELOPER.title,
-    summary: DEVELOPER.summary,
-    location: DEVELOPER.location,
-    email: DEVELOPER.email,
-    handle: DEVELOPER.handle,
-    githubUrl: DEVELOPER.github,
-    githubLabel: `github.com/${DEVELOPER.handle}`,
-    portfolioUrl: `gitoco.com/portfolio/${DEVELOPER.handle}`,
+    name: edits.name?.trim() || DEVELOPER.fullName,
+    title: edits.title?.trim() || DEVELOPER.title,
+    summary: edits.sections.summary ? (edits.summary ?? DEVELOPER.summary) : "",
+    location: edits.location?.trim() || DEVELOPER.location,
+    email: edits.email?.trim() || DEVELOPER.email,
+    handle,
+    githubUrl: `https://github.com/${handle}`,
+    githubLabel: `github.com/${handle}`,
+    portfolioUrl: `gitoco.com/portfolio/${handle}`,
     avatar: DEVELOPER.avatar,
     contactLine: "Available for engineering roles and freelance work",
-    skills,
-    projects,
+    skills: edits.sections.skills ? (edits.skills ?? skills) : [],
+    projects: edits.sections.work ? ordered : [],
   };
+}
+
+/** Generated (un-edited) document — the editor reads this as its starting point. */
+export function generatedPortfolio(repos: Repo[], template: TemplateId): PortfolioData {
+  return buildPortfolio(repos, template, DEFAULT_EDITS);
+}
+
+function orderProjects(projects: PortfolioProject[], order: string[]): PortfolioProject[] {
+  if (order.length === 0) return projects;
+  const ranked = [...projects];
+  ranked.sort((a, b) => {
+    const ia = order.indexOf(a.id);
+    const ib = order.indexOf(b.id);
+    return (ia === -1 ? order.length : ia) - (ib === -1 ? order.length : ib);
+  });
+  return ranked;
 }

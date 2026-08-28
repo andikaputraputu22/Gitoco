@@ -1,13 +1,15 @@
 import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { FileDown, Globe, Loader2, Sparkles } from "lucide-react";
+import { FileDown, Globe, Loader2, Pencil, Sparkles } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { ExportPdfDialog } from "@/components/ExportPdfDialog";
 import { PublishDialog } from "@/components/PublishDialog";
 import { PortfolioDocumentView } from "@/components/PortfolioDocumentView";
+import { PortfolioEditor } from "@/components/PortfolioEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { TEMPLATES, TEMPLATE_LIST, buildPortfolio } from "@/lib/portfolio";
+import { TEMPLATES, TEMPLATE_LIST, buildPortfolio, generatedPortfolio } from "@/lib/portfolio";
+import type { PortfolioEdits } from "@/lib/portfolio";
 import { analyzedRepos, useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -21,10 +23,15 @@ export default function PortfolioPreview(): React.ReactElement {
   const [generating, setGenerating] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
+  // Unsaved editor draft: while set, the preview renders it so edits are live.
+  const [draft, setDraft] = useState<PortfolioEdits | null>(null);
 
   // The document the preview renders. The PDF export is handed this exact object,
   // so both surfaces always agree on content, order and template.
-  const data = useMemo(() => buildPortfolio(repos, state.template), [repos, state.template]);
+  const edits = draft ?? state.edits;
+  const data = useMemo(() => buildPortfolio(repos, state.template, edits), [repos, state.template, edits]);
+  const generated = useMemo(() => generatedPortfolio(repos, state.template), [repos, state.template]);
   const buildDocument = useCallback(() => data, [data]);
 
   function generate() {
@@ -89,6 +96,9 @@ export default function PortfolioPreview(): React.ReactElement {
       subtitle="A live developer portfolio generated from your analysed repositories. Switch templates instantly."
       action={
         <div className="flex flex-wrap items-center gap-3">
+          <Button variant="outline" className="rounded-full" onClick={() => setEditorOpen(true)} data-testid="edit-portfolio-btn">
+            <Pencil className="mr-2 h-4 w-4" /> Edit Portfolio
+          </Button>
           <Button className="rounded-full" onClick={() => setPublishOpen(true)} data-testid="publish-portfolio-btn">
             <Globe className="mr-2 h-4 w-4" /> {state.published ? "Republish" : "Publish Portfolio"}
           </Button>
@@ -101,6 +111,21 @@ export default function PortfolioPreview(): React.ReactElement {
         </div>
       }
     >
+      <PortfolioEditor
+        open={editorOpen}
+        onOpenChange={setEditorOpen}
+        saved={state.edits}
+        generated={generated}
+        onDraftChange={setDraft}
+        onSave={(next) => {
+          update({ edits: next });
+          setDraft(null);
+          toast.success("Portfolio updated", {
+            description: "Preview, public portfolio and PDF now use your edits.",
+          });
+        }}
+      />
+
       <ExportPdfDialog
         open={exportOpen}
         onOpenChange={setExportOpen}

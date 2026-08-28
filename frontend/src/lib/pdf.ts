@@ -458,7 +458,7 @@ export function generatePortfolioPdf(data: PortfolioData, opts: PdfOptions = {})
   const innerW = CONTENT_W - pad * 2;
 
   // ---------------- Summary ----------------
-  if (cfg.id !== "modern") {
+  if (cfg.id !== "modern" && data.summary) {
     const labelH = cfg.labels.summary ? 3.4 + 3.5 : 0;
     const bodyH = paragraph(ctx, { text: data.summary, x: innerX, y: 0, w: innerW, size: 10, color: k.body, render: false, lead: 1.5 });
     ensure(labelH + bodyH + 14);
@@ -472,7 +472,7 @@ export function generatePortfolioPdf(data: PortfolioData, opts: PdfOptions = {})
   }
 
   // ---------------- Skills ----------------
-  if (cfg.labels.skills) {
+  if (cfg.labels.skills && data.skills.length > 0) {
     if (k.skillStyle === "pills") {
       const h = pills(ctx, { items: data.skills, x: innerX, y: 0, maxW: innerW, bg: k.pillBg!, ink: k.pillInk!, size: 8, render: false });
       ensure(h + 20);
@@ -493,9 +493,11 @@ export function generatePortfolioPdf(data: PortfolioData, opts: PdfOptions = {})
   }
 
   // ---------------- Work ----------------
-  ensure(20);
-  y += caption(ctx, cfg.labels.work, M.left, y, true);
-  y += cfg.id === "minimal" ? 6 : 6.5;
+  if (data.projects.length > 0) {
+    ensure(20);
+    y += caption(ctx, cfg.labels.work, M.left, y, true);
+    y += cfg.id === "minimal" ? 6 : 6.5;
+  }
 
   data.projects.forEach((p, i) => {
     const h = projectBlock(ctx, { project: p, index: i, startY: y, render: false });

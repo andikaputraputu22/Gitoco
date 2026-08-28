@@ -98,3 +98,8 @@ Print-only adaptations (deliberate): fixed A4 instead of responsive widths, sing
 
 ## Credentials
 None — no login gate anywhere.
+
+## Edit Portfolio (manual refinement)
+- `AppState.edits: PortfolioEdits` (localStorage, `lib/portfolio.ts`) overrides the generated document: profile fields, summary, skills list, per-project title/blurb/tech/hidden, project order, and section visibility (summary, skills, work, evidence).
+- `buildPortfolio(repos, template, edits)` applies the overrides, so Portfolio Preview, Public Portfolio and PDF export all render the same edited document.
+- UI: "Edit Portfolio" button on the Portfolio page opens `components/PortfolioEditor.tsx` (right sheet). Live draft updates the preview; Save commits to state, Cancel discards, "Reset to Generated Content" (two-click confirm) clears all edits.

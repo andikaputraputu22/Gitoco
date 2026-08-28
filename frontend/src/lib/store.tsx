@@ -1,6 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import type { JobMatchResult } from "@/lib/mock";
+import type { PortfolioEdits } from "@/lib/portfolio";
+import { DEFAULT_EDITS } from "@/lib/portfolio";
 import { REPOS, getInsight } from "@/lib/mock";
 
 export type TemplateId = "minimal" | "professional" | "modern";
@@ -14,6 +16,8 @@ export interface AppState {
   jobMatch: JobMatchResult | null;
   jobDescription: string;
   headline: string;
+  /** manual refinements applied on top of the generated portfolio */
+  edits: PortfolioEdits;
 }
 
 const STORAGE_KEY = "gitfolio.state.v1";
@@ -27,13 +31,23 @@ const INITIAL: AppState = {
   jobMatch: null,
   jobDescription: "",
   headline: "Android & Full-Stack Engineer",
+  edits: DEFAULT_EDITS,
 };
 
 function load(): AppState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return INITIAL;
-    return { ...INITIAL, ...(JSON.parse(raw) as Partial<AppState>) };
+    const parsed = JSON.parse(raw) as Partial<AppState>;
+    return {
+      ...INITIAL,
+      ...parsed,
+      edits: {
+        ...DEFAULT_EDITS,
+        ...(parsed.edits ?? {}),
+        sections: { ...DEFAULT_EDITS.sections, ...(parsed.edits?.sections ?? {}) },
+      },
+    };
   } catch {
     return INITIAL;
   }

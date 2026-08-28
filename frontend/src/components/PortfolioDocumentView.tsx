@@ -68,21 +68,25 @@ function MinimalTemplate({ data, evidenceVariant }: { data: PortfolioData; evide
         <p className="mt-3 text-[17px]" style={{ color: k.muted }}>
           {data.title}
         </p>
-        <p
-          className="mt-8 border-t pt-8 text-[16px] leading-[1.8]"
-          style={{ borderColor: k.rule, color: k.body }}
-        >
-          {data.summary}
-        </p>
-
-        <div className="mt-14">
-          <SectionLabel t={t}>{t.labels.skills!}</SectionLabel>
-          <p className="mt-4 text-[15px] leading-[1.9]" style={{ color: k.body }}>
-            {data.skills.join(" · ")}
+        {data.summary && (
+          <p
+            className="mt-8 border-t pt-8 text-[16px] leading-[1.8]"
+            style={{ borderColor: k.rule, color: k.body }}
+          >
+            {data.summary}
           </p>
-        </div>
+        )}
 
-        <div className="mt-14">
+        {data.skills.length > 0 && (
+          <div className="mt-14">
+            <SectionLabel t={t}>{t.labels.skills!}</SectionLabel>
+            <p className="mt-4 text-[15px] leading-[1.9]" style={{ color: k.body }}>
+              {data.skills.join(" · ")}
+            </p>
+          </div>
+        )}
+
+        <div className={data.projects.length > 0 ? "mt-14" : "hidden"}>
           <SectionLabel t={t}>{t.labels.work}</SectionLabel>
           <div className="mt-6">
             {data.projects.map((p, i) => (
@@ -174,14 +178,16 @@ function ProfessionalTemplate({ data, evidenceVariant }: { data: PortfolioData; 
       </div>
 
       <div className="mx-auto max-w-4xl space-y-10 px-8 py-12 sm:px-14">
-        <section className="rounded-2xl p-7" style={{ backgroundColor: k.surface!, border: `1px solid ${k.rule}` }}>
-          <SectionLabel t={t}>{t.labels.summary!}</SectionLabel>
-          <p className="mt-3 text-[15.5px] leading-[1.8]" style={{ color: k.body }}>
-            {data.summary}
-          </p>
-        </section>
+        {data.summary && (
+          <section className="rounded-2xl p-7" style={{ backgroundColor: k.surface!, border: `1px solid ${k.rule}` }}>
+            <SectionLabel t={t}>{t.labels.summary!}</SectionLabel>
+            <p className="mt-3 text-[15.5px] leading-[1.8]" style={{ color: k.body }}>
+              {data.summary}
+            </p>
+          </section>
+        )}
 
-        <section className="rounded-2xl p-7" style={{ backgroundColor: k.surface!, border: `1px solid ${k.rule}` }}>
+        <section className={data.skills.length > 0 ? "rounded-2xl p-7" : "hidden"} style={{ backgroundColor: k.surface!, border: `1px solid ${k.rule}` }}>
           <SectionLabel t={t}>{t.labels.skills!}</SectionLabel>
           <div className="mt-4 flex flex-wrap gap-2">
             {data.skills.map((s) => (
@@ -196,7 +202,7 @@ function ProfessionalTemplate({ data, evidenceVariant }: { data: PortfolioData; 
           </div>
         </section>
 
-        <section>
+        <section className={data.projects.length > 0 ? "" : "hidden"}>
           <SectionLabel t={t}>{t.labels.work}</SectionLabel>
           <div className="mt-4 grid gap-4">
             {data.projects.map((p) => (
@@ -308,7 +314,7 @@ function ModernTemplate({ data, evidenceVariant }: { data: PortfolioData; eviden
           ))}
         </div>
 
-        <div className="mt-20">
+        <div className={data.projects.length > 0 ? "mt-20" : "hidden"}>
           <SectionLabel t={t}>{t.labels.work}</SectionLabel>
           <div className="mt-6 grid gap-4">
             {data.projects.map((p, i) => (

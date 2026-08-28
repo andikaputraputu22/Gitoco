@@ -14,7 +14,7 @@ export default function PublicPortfolio(): React.ReactElement {
   const { handle = "" } = useParams();
   const { state } = useApp();
   const repos = analyzedRepos(state.analyzedIds);
-  const data = buildPortfolio(repos, state.template);
+  const data = buildPortfolio(repos, state.template, state.edits);
   const tokens = TEMPLATES[state.template].tokens;
 
   const available = repos.length > 0 && state.portfolioGenerated;
