@@ -5,7 +5,11 @@ import AppLayout from "@/components/AppLayout";
 import { ExportPdfDialog } from "@/components/ExportPdfDialog";
 import { PublishDialog } from "@/components/PublishDialog";
 import { PortfolioDocumentView } from "@/components/PortfolioDocumentView";
-import { PortfolioEditor } from "@/components/PortfolioEditor";
+import {
+  PortfolioEditorForm,
+  PortfolioEditorSheet,
+  useIsDesktopEditor,
+} from "@/components/PortfolioEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { TEMPLATES, TEMPLATE_LIST, buildPortfolio, generatedPortfolio } from "@/lib/portfolio";
@@ -26,6 +30,9 @@ export default function PortfolioPreview(): React.ReactElement {
   const [editorOpen, setEditorOpen] = useState(false);
   // Unsaved editor draft: while set, the preview renders it so edits are live.
   const [draft, setDraft] = useState<PortfolioEdits | null>(null);
+  // Bumped each time edit mode is entered so the form re-seeds its draft.
+  const [editSession, setEditSession] = useState(0);
+  const isDesktopEditor = useIsDesktopEditor();
 
   // The document the preview renders. The PDF export is handed this exact object,
   // so both surfaces always agree on content, order and template.
@@ -90,13 +97,37 @@ export default function PortfolioPreview(): React.ReactElement {
     );
   }
 
+  const editorProps = {
+    saved: state.edits,
+    generated,
+    onDraftChange: setDraft,
+    onClose: () => setEditorOpen(false),
+    sessionKey: editSession,
+    onSave: (next: PortfolioEdits) => {
+      update({ edits: next });
+      setDraft(null);
+      toast.success("Portfolio updated", {
+        description: "Preview, public portfolio and PDF now use your edits.",
+      });
+    },
+  };
+
   return (
     <AppLayout
-      title="Portfolio preview"
+      title={editorOpen ? "Edit portfolio" : "Portfolio preview"}
       subtitle="A live developer portfolio generated from your analysed repositories. Switch templates instantly."
       action={
         <div className="flex flex-wrap items-center gap-3">
-          <Button variant="outline" className="rounded-full" onClick={() => setEditorOpen(true)} data-testid="edit-portfolio-btn">
+          <Button
+            variant="outline"
+            className="rounded-full"
+            onClick={() => {
+              setEditSession((n) => n + 1);
+              setEditorOpen(true);
+            }}
+            aria-pressed={editorOpen}
+            data-testid="edit-portfolio-btn"
+          >
             <Pencil className="mr-2 h-4 w-4" /> Edit Portfolio
           </Button>
           <Button className="rounded-full" onClick={() => setPublishOpen(true)} data-testid="publish-portfolio-btn">
@@ -111,20 +142,10 @@ export default function PortfolioPreview(): React.ReactElement {
         </div>
       }
     >
-      <PortfolioEditor
-        open={editorOpen}
-        onOpenChange={setEditorOpen}
-        saved={state.edits}
-        generated={generated}
-        onDraftChange={setDraft}
-        onSave={(next) => {
-          update({ edits: next });
-          setDraft(null);
-          toast.success("Portfolio updated", {
-            description: "Preview, public portfolio and PDF now use your edits.",
-          });
-        }}
-      />
+      {/* Small screens keep the overlay editor; desktop uses the split-screen column below. */}
+      {!isDesktopEditor && (
+        <PortfolioEditorSheet open={editorOpen} {...editorProps} />
+      )}
 
       <ExportPdfDialog
         open={exportOpen}
@@ -158,6 +179,29 @@ export default function PortfolioPreview(): React.ReactElement {
         </div>
       )}
 
+      <div
+        className={cn(
+          "gap-6",
+          editorOpen && isDesktopEditor && "grid items-start lg:grid-cols-[440px_minmax(0,1fr)]",
+        )}
+        data-testid="portfolio-workspace"
+      >
+        {editorOpen && isDesktopEditor && (
+          <aside
+            className="flex max-h-[calc(100vh-11rem)] min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-card lg:sticky lg:top-6"
+            data-testid="portfolio-editor-panel"
+          >
+            <div className="border-b border-border px-6 py-5">
+              <h2 className="font-heading text-[17px] font-semibold">Edit Portfolio</h2>
+              <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
+                Refine your generated portfolio. Changes appear instantly in the live preview.
+              </p>
+            </div>
+            <PortfolioEditorForm {...editorProps} />
+          </aside>
+        )}
+
+        <div className="min-w-0">
       <div className="mb-6 flex flex-wrap items-center gap-2 rounded-full border border-border bg-card p-1.5" data-testid="template-selector">
         {TEMPLATE_LIST.map((tpl) => (
           <button
@@ -197,6 +241,8 @@ export default function PortfolioPreview(): React.ReactElement {
       <p className="mt-6 text-[12px] text-muted-foreground/70">
         Exporting to PDF prints this exact template. Publishing and custom domains are out of scope for this prototype.
       </p>
+        </div>
+      </div>
     </AppLayout>
   );
 }
