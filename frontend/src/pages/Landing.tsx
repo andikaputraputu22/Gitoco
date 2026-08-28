@@ -10,6 +10,7 @@ import {
   Sparkles,
   Target,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Github } from "@/components/GithubIcon";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -32,6 +33,63 @@ const FEATURES = [
   { icon: Target, title: "Job Matching", body: "Paste a job description and see your match score, strengths and gaps." },
 ];
 
+
+const PLANS = [
+  {
+    id: "free",
+    name: "Free",
+    price: "$0",
+    period: "",
+    subtitle: "For developers getting started",
+    features: [
+      "Connect 1 GitHub account",
+      "Analyze up to 3 projects",
+      "Basic portfolio template",
+      "AI project insights",
+      "Engineering Evidence summary",
+      "Public portfolio link",
+    ],
+    cta: "Start Free",
+    featured: false,
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    price: "$9",
+    period: "/ month",
+    subtitle: "For developers building a stronger professional presence",
+    features: [
+      "Up to 20 analyzed projects",
+      "All portfolio templates",
+      "Full Engineering Evidence details",
+      "PDF export",
+      "Public portfolio",
+      "Advanced AI project insights",
+      "Resume-ready project descriptions",
+      "Priority portfolio customization",
+    ],
+    cta: "Upgrade to Pro",
+    featured: true,
+  },
+  {
+    id: "teams",
+    name: "Teams",
+    price: "Coming Soon",
+    period: "",
+    subtitle: "For recruiters, agencies, and hiring teams",
+    features: [
+      "Shared candidate workspace",
+      "Engineering evidence summaries",
+      "Hiring context",
+      "Candidate project review",
+      "Team collaboration",
+      "Multi-candidate management",
+    ],
+    cta: "Join Waitlist",
+    featured: false,
+  },
+] as const;
+
 const PIPELINE = [
   { label: "GitHub Repository", meta: "andikaputraputu/oboeru", tone: "text-muted-foreground" },
   { label: "AI Analysis", meta: "Clean Architecture · MVVM · Room", tone: "text-primary" },
@@ -51,6 +109,7 @@ export default function Landing(): React.ReactElement {
             <a href="#product" className="transition-colors duration-200 hover:text-foreground" data-testid="nav-link-product">Product</a>
             <a href="#how-it-works" className="transition-colors duration-200 hover:text-foreground" data-testid="nav-link-how-it-works">How It Works</a>
             <a href="#features" className="transition-colors duration-200 hover:text-foreground" data-testid="nav-link-features">Features</a>
+            <a href="#pricing" className="transition-colors duration-200 hover:text-foreground" data-testid="nav-link-pricing">Pricing</a>
           </nav>
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle testId="theme-toggle-landing" />
@@ -207,6 +266,101 @@ export default function Landing(): React.ReactElement {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+
+      {/* PRICING */}
+      <section id="pricing" className="border-b border-border">
+        <div className="mx-auto max-w-6xl px-5 py-20 lg:py-24">
+          <div className="max-w-2xl">
+            <p className="mono text-[12px] uppercase tracking-[0.16em] text-primary">Pricing</p>
+            <h2 className="mt-3 font-heading text-[30px] font-semibold leading-tight sm:text-[36px]" data-testid="pricing-headline">
+              Simple pricing for developers today, built to scale with teams tomorrow.
+            </h2>
+            <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
+              Start free, build your portfolio, and upgrade when you need more projects, deeper
+              insights, and professional sharing tools.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {PLANS.map((plan) => (
+              <div
+                key={plan.id}
+                className={`relative flex flex-col rounded-2xl border bg-card p-7 ${
+                  plan.featured ? "border-primary/45 ring-1 ring-primary/15" : "border-border"
+                }`}
+                data-testid={`pricing-card-${plan.id}`}
+              >
+                {plan.featured && (
+                  <Badge
+                    variant="outline"
+                    className="mono absolute right-6 top-6 rounded-full border-primary/30 bg-primary/8 text-[10px] uppercase tracking-[0.14em] text-primary"
+                    data-testid="pricing-popular-badge"
+                  >
+                    Most popular
+                  </Badge>
+                )}
+                <h3 className="font-heading text-[18px] font-semibold" data-testid={`pricing-name-${plan.id}`}>
+                  {plan.name}
+                </h3>
+                <div className="mt-3 flex items-baseline gap-1.5">
+                  <span className="font-heading text-[30px] font-semibold" data-testid={`pricing-price-${plan.id}`}>
+                    {plan.price}
+                  </span>
+                  {plan.period && (
+                    <span className="text-[13px] text-muted-foreground">{plan.period}</span>
+                  )}
+                </div>
+                <p className="mt-2 text-[13.5px] leading-relaxed text-muted-foreground">{plan.subtitle}</p>
+
+                <ul className="mt-6 space-y-2.5 border-t border-border pt-6" data-testid={`pricing-features-${plan.id}`}>
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2.5 text-[14px] leading-snug">
+                      <Check className={`mt-0.5 h-4 w-4 shrink-0 ${plan.featured ? "text-primary" : "text-muted-foreground"}`} />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-7 pt-1">
+                  {plan.id === "free" ? (
+                    <Link
+                      to="/dashboard"
+                      className={buttonVariants({ size: "lg" }) + " w-full rounded-full"}
+                      data-testid="pricing-cta-free"
+                    >
+                      {plan.cta}
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        toast.info(
+                          plan.id === "pro"
+                            ? "Payments are not enabled in the contest demo."
+                            : "Teams is coming soon.",
+                        )
+                      }
+                      className={
+                        buttonVariants({ variant: plan.id === "pro" ? "default" : "outline", size: "lg" }) +
+                        " w-full" +
+                        (plan.id === "pro" ? " rounded-full" : sec)
+                      }
+                      data-testid={`pricing-cta-${plan.id}`}
+                    >
+                      {plan.cta}
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-6 text-[12px] text-muted-foreground/70">
+            Contest demo — payments and Teams access are not enabled.
+          </p>
         </div>
       </section>
 
