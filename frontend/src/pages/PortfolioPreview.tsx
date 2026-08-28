@@ -180,13 +180,13 @@ export default function PortfolioPreview(): React.ReactElement {
       <div
         className={cn(
           "gap-6",
-          editorOpen && isDesktopEditor && "grid items-start lg:grid-cols-[440px_minmax(0,1fr)]",
+          editorOpen && isDesktopEditor && "grid items-start xl:grid-cols-[440px_minmax(0,1fr)]",
         )}
         data-testid="portfolio-workspace"
       >
         {editorOpen && isDesktopEditor && (
           <aside
-            className="flex max-h-[calc(100vh-11rem)] min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-card lg:sticky lg:top-6"
+            className="flex max-h-[calc(100vh-11rem)] min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-card xl:sticky xl:top-6"
             data-testid="portfolio-editor-panel"
           >
             <div className="border-b border-border px-6 py-5">

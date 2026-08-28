@@ -32,13 +32,17 @@ export interface EditorProps {
   sessionKey: number;
 }
 
-/** true when the viewport is wide enough for the split-screen editor. */
+/**
+ * true only on genuinely wide desktops (>= 1280px). iPad Pro at 1024px and
+ * every narrower tablet/phone gets the fullscreen editor instead, because the
+ * dashboard sidebar + editor column would squeeze the preview.
+ */
 export function useIsDesktopEditor(): boolean {
   const [match, setMatch] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches,
+    () => typeof window !== "undefined" && window.matchMedia("(min-width: 1280px)").matches,
   );
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
+    const mq = window.matchMedia("(min-width: 1280px)");
     const onChange = (e: MediaQueryListEvent) => setMatch(e.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
