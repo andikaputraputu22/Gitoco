@@ -315,7 +315,7 @@ export default function Landing(): React.ReactElement {
                 </div>
                 <p className="mt-2 text-[13.5px] leading-relaxed text-muted-foreground">{plan.subtitle}</p>
 
-                <ul className="mt-6 flex-1 space-y-2.5 border-t border-border pt-6" data-testid={`pricing-features-${plan.id}`}>
+                <ul className="mt-6 flex-1 space-y-2.5 border-t border-border pb-1 pt-6" data-testid={`pricing-features-${plan.id}`}>
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-start gap-2.5 text-[14px] leading-snug">
                       <Check className={`mt-0.5 h-4 w-4 shrink-0 ${plan.featured ? "text-primary" : "text-muted-foreground"}`} />
@@ -324,7 +324,7 @@ export default function Landing(): React.ReactElement {
                   ))}
                 </ul>
 
-                <div className="mt-7 pt-1 md:mt-auto">
+                <div className="mt-7 md:mt-auto md:pt-7">
                   {plan.id === "free" ? (
                     <Link
                       to="/dashboard"
