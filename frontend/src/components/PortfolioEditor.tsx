@@ -1,17 +1,10 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowUp, ChevronDown, RotateCcw, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowLeft, ChevronDown, RotateCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { DEFAULT_EDITS } from "@/lib/portfolio";
 import type { PortfolioData, PortfolioEdits } from "@/lib/portfolio";
 
@@ -20,7 +13,7 @@ import type { PortfolioData, PortfolioEdits } from "@/lib/portfolio";
  *
  * One implementation of the form (`PortfolioEditorForm`) rendered in two shells:
  *  - desktop: an inline left column beside the live preview (split-screen)
- *  - small screens: the sheet overlay (`PortfolioEditorSheet`)
+ *  - tablet / mobile: a fullscreen workspace (`PortfolioEditorFullscreen`)
  *
  * The form works on a local draft of `PortfolioEdits` and pushes every change up
  * as a live draft, so the preview updates without saving. Save commits the draft
@@ -53,30 +46,47 @@ export function useIsDesktopEditor(): boolean {
   return match;
 }
 
-export function PortfolioEditorSheet({
+/** Tablet / mobile: dedicated fullscreen editing screen (no overlay, no drawer). */
+export function PortfolioEditorFullscreen({
   open,
   ...props
-}: EditorProps & { open: boolean }): React.ReactElement {
+}: EditorProps & { open: boolean }): React.ReactElement | null {
+  // Lock the page behind the fullscreen editor so only the form scrolls.
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
+  if (!open) return null;
+
   return (
-    <Sheet
-      open={open}
-      onOpenChange={(o) => {
-        if (!o) {
-          props.onDraftChange(null);
-          props.onClose();
-        }
-      }}
-    >
-      <SheetContent side="right" className="w-full gap-0 p-0 sm:max-w-md" data-testid="portfolio-editor-panel">
-        <SheetHeader className="border-b border-border px-6 py-5">
-          <SheetTitle className="font-heading text-[19px]">Edit Portfolio</SheetTitle>
-          <SheetDescription>
-            Refine your generated portfolio. Changes appear instantly in the live preview.
-          </SheetDescription>
-        </SheetHeader>
-        <PortfolioEditorForm {...props} />
-      </SheetContent>
-    </Sheet>
+    <div className="fixed inset-0 z-50 flex flex-col bg-background" data-testid="portfolio-editor-panel">
+      <header className="flex items-center gap-3 border-b border-border bg-card px-4 py-3 sm:px-6">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Close editor"
+          onClick={() => {
+            props.onDraftChange(null);
+            props.onClose();
+          }}
+          data-testid="editor-close-btn"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <div className="min-w-0">
+          <h2 className="font-heading text-[16px] font-semibold">Edit Portfolio</h2>
+          <p className="hidden text-[12.5px] text-muted-foreground sm:block">
+            Changes appear instantly in your portfolio once saved.
+          </p>
+        </div>
+      </header>
+      <PortfolioEditorForm {...props} />
+    </div>
   );
 }
 
@@ -136,7 +146,7 @@ export function PortfolioEditorForm({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col" data-testid="portfolio-editor-form">
-      <div className="min-h-0 flex-1 space-y-8 overflow-y-auto px-6 py-6">
+      <div className="min-h-0 flex-1 space-y-8 overflow-y-auto px-4 py-5 sm:px-7 sm:py-6">
         {/* Profile */}
         <section className="space-y-3" data-testid="editor-profile-section">
           <p className="mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Profile</p>
@@ -338,7 +348,7 @@ export function PortfolioEditorForm({
       </div>
 
       {/* Sticky actions */}
-      <div className="sticky bottom-0 border-t border-border bg-card/95 px-6 py-4 backdrop-blur">
+      <div className="sticky bottom-0 border-t border-border bg-card/95 px-4 py-4 backdrop-blur sm:px-7">
         <div className="flex flex-wrap items-center gap-2">
           <Button
             className="rounded-full"

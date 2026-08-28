@@ -7,7 +7,7 @@ import { PublishDialog } from "@/components/PublishDialog";
 import { PortfolioDocumentView } from "@/components/PortfolioDocumentView";
 import {
   PortfolioEditorForm,
-  PortfolioEditorSheet,
+  PortfolioEditorFullscreen,
   useIsDesktopEditor,
 } from "@/components/PortfolioEditor";
 import { Badge } from "@/components/ui/badge";
@@ -142,10 +142,8 @@ export default function PortfolioPreview(): React.ReactElement {
         </div>
       }
     >
-      {/* Small screens keep the overlay editor; desktop uses the split-screen column below. */}
-      {!isDesktopEditor && (
-        <PortfolioEditorSheet open={editorOpen} {...editorProps} />
-      )}
+      {/* Tablet / mobile: fullscreen editor. Desktop uses the split-screen column below. */}
+      {!isDesktopEditor && <PortfolioEditorFullscreen open={editorOpen} {...editorProps} />}
 
       <ExportPdfDialog
         open={exportOpen}
