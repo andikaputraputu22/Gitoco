@@ -6,6 +6,7 @@ import {
   Check,
   FileText,
   Layers,
+  ChevronDown,
   ScanSearch,
   Sparkles,
   Target,
@@ -87,6 +88,46 @@ const PLANS = [
     ],
     cta: "Join Waitlist",
     featured: false,
+  },
+] as const;
+
+
+const FAQS = [
+  {
+    q: "What is Gitoco?",
+    a: "Gitoco helps developers turn GitHub repositories into structured professional portfolios by analyzing project technologies, architecture, engineering work, and project insights.",
+  },
+  {
+    q: "How does Gitoco analyze my projects?",
+    a: "Gitoco uses repository information to identify technologies, architecture patterns, key features, engineering strengths, and technical context that can be transformed into portfolio-ready content.",
+  },
+  {
+    q: "What is Engineering Evidence?",
+    a: "Engineering Evidence provides additional technical context behind Gitoco's project insights by highlighting patterns, structures, and implementation signals found within a project.",
+  },
+  {
+    q: "Does Gitoco read my entire source code?",
+    a: "The production version of Gitoco is designed to analyze only the repository information required to understand a project. Users should remain in control of which repositories they choose to analyze.",
+  },
+  {
+    q: "Can I choose which GitHub projects appear in my portfolio?",
+    a: "Yes. You can select the repositories that best represent your work instead of including every project in your GitHub account.",
+  },
+  {
+    q: "Can I export my portfolio?",
+    a: "Yes. Gitoco supports professional PDF export and a shareable public portfolio so your work can be presented to recruiters, clients, and hiring teams.",
+  },
+  {
+    q: "Is Gitoco only for developers?",
+    a: "Gitoco is developer-first, but the portfolios and engineering context it creates are also designed to help recruiters, hiring teams, and clients understand a developer's work more clearly.",
+  },
+  {
+    q: "What is the difference between Free, Pro, and Teams?",
+    a: "Free is designed for developers getting started. Pro unlocks more projects, advanced insights, portfolio templates, detailed Engineering Evidence, and professional export tools. Teams is planned for recruiters, agencies, and hiring teams.",
+  },
+  {
+    q: "Is the current Gitoco demo using real GitHub and AI data?",
+    a: "No. The current competition demo uses simulated GitHub repository data and AI insights to demonstrate the intended product experience.",
   },
 ] as const;
 
@@ -361,6 +402,41 @@ export default function Landing(): React.ReactElement {
           <p className="mt-6 text-[12px] text-muted-foreground/70">
             Contest demo — payments and Teams access are not enabled.
           </p>
+        </div>
+      </section>
+
+
+      {/* FAQ */}
+      <section id="faq" className="border-b border-border">
+        <div className="mx-auto max-w-6xl px-5 py-20 lg:py-24">
+          <div className="max-w-2xl">
+            <p className="mono text-[12px] uppercase tracking-[0.16em] text-primary">FAQ</p>
+            <h2 className="mt-3 font-heading text-[30px] font-semibold leading-tight sm:text-[36px]" data-testid="faq-headline">
+              Frequently asked questions
+            </h2>
+            <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
+              Everything you need to know about how Gitoco turns GitHub projects into professional
+              developer portfolios.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-3 lg:grid-cols-2">
+            {FAQS.map((item, i) => (
+              <details
+                key={item.q}
+                className="group rounded-2xl border border-border bg-card px-5 py-4 transition-colors duration-200 hover:border-foreground/20"
+                data-testid={`faq-item-${i + 1}`}
+              >
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-[15px] font-medium [&::-webkit-details-marker]:hidden">
+                  <span>{item.q}</span>
+                  <ChevronDown className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
+                </summary>
+                <p className="mt-3 max-w-prose text-[14px] leading-relaxed text-muted-foreground" data-testid={`faq-answer-${i + 1}`}>
+                  {item.a}
+                </p>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 
