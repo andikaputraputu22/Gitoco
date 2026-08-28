@@ -112,6 +112,8 @@ export default function PortfolioPreview(): React.ReactElement {
     },
   };
 
+const splitScreen = editorOpen && isDesktopEditor;
+
   return (
     <AppLayout
       title={editorOpen ? "Edit portfolio" : "Portfolio preview"}
@@ -180,13 +182,14 @@ export default function PortfolioPreview(): React.ReactElement {
       <div
         className={cn(
           "gap-6",
-          editorOpen && isDesktopEditor && "grid items-start xl:grid-cols-[440px_minmax(0,1fr)]",
+          splitScreen &&
+            "grid h-[calc(100vh-11rem)] items-stretch xl:grid-cols-[440px_minmax(0,1fr)]",
         )}
         data-testid="portfolio-workspace"
       >
-        {editorOpen && isDesktopEditor && (
+        {splitScreen && (
           <aside
-            className="flex max-h-[calc(100vh-11rem)] min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-card xl:sticky xl:top-6"
+            className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-card"
             data-testid="portfolio-editor-panel"
           >
             <div className="border-b border-border px-6 py-5">
@@ -199,8 +202,8 @@ export default function PortfolioPreview(): React.ReactElement {
           </aside>
         )}
 
-        <div className="min-w-0">
-      <div className="mb-6 flex flex-wrap items-center gap-2 rounded-full border border-border bg-card p-1.5" data-testid="template-selector">
+        <div className={cn("min-w-0", splitScreen && "flex h-full min-h-0 flex-col")}>
+      <div className="mb-6 shrink-0 flex flex-wrap items-center gap-2 rounded-full border border-border bg-card p-1.5" data-testid="template-selector">
         {TEMPLATE_LIST.map((tpl) => (
           <button
             key={tpl.id}
@@ -223,7 +226,7 @@ export default function PortfolioPreview(): React.ReactElement {
         </span>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border shadow-2xl">
+      <div className={cn("overflow-hidden rounded-2xl border border-border shadow-2xl", splitScreen && "flex min-h-0 flex-1 flex-col")}>
         <div className="flex items-center gap-2 border-b border-border bg-card px-4 py-3">
           <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#FEBC2E]" />
@@ -231,12 +234,12 @@ export default function PortfolioPreview(): React.ReactElement {
           <span className="mono ml-3 truncate text-[11px] text-muted-foreground">{data.portfolioUrl}</span>
           <Badge variant="outline" className="mono ml-auto text-[10px]">LIVE PREVIEW</Badge>
         </div>
-        <div className="max-h-[720px] overflow-y-auto">
+        <div className={cn("overflow-y-auto", splitScreen ? "min-h-0 flex-1" : "max-h-[720px]")}>
           <PortfolioDocumentView data={data} />
         </div>
       </div>
 
-      <p className="mt-6 text-[12px] text-muted-foreground/70">
+      <p className={cn("mt-6 text-[12px] text-muted-foreground/70", splitScreen && "hidden")}>
         Exporting to PDF prints this exact template. Publishing and custom domains are out of scope for this prototype.
       </p>
         </div>
