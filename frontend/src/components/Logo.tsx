@@ -1,7 +1,16 @@
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
-export function Logo({ className, to = "/" }: { className?: string; to?: string }) {
+export function Logo({
+  className,
+  to = "/",
+  iconOnly = false,
+}: {
+  className?: string;
+  to?: string;
+  /** collapsed sidebar rail: symbol without the wordmark */
+  iconOnly?: boolean;
+}) {
   return (
     <Link
       to={to}
@@ -23,9 +32,11 @@ export function Logo({ className, to = "/" }: { className?: string; to?: string 
         <circle cx="17" cy="6" r="2.2" />
         <circle cx="17" cy="17" r="2.2" />
       </svg>
-      <span className="whitespace-nowrap font-heading text-[17px] font-semibold tracking-tight">
-        Gitoco
-      </span>
+      {!iconOnly && (
+        <span className="whitespace-nowrap font-heading text-[17px] font-semibold tracking-tight">
+          Gitoco
+        </span>
+      )}
     </Link>
   );
 }
