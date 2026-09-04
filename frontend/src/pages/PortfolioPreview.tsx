@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { FileDown, Globe, Loader2, Pencil, Sparkles } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { FileDown, Globe, Loader2, Pencil, Sparkles, MoreHorizontal, Briefcase } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { ExportPdfDialog } from "@/components/ExportPdfDialog";
 import { PublishDialog } from "@/components/PublishDialog";
@@ -12,6 +12,12 @@ import {
 } from "@/components/PortfolioEditor";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { TEMPLATES, TEMPLATE_LIST, buildPortfolio, generatedPortfolio } from "@/lib/portfolio";
 import type { PortfolioEdits } from "@/lib/portfolio";
 import { analyzedRepos, useApp } from "@/lib/store";
@@ -19,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 export default function PortfolioPreview(): React.ReactElement {
+  const navigate = useNavigate();
   const { state, update } = useApp();
   // Memoised so `data`/`buildDocument` keep a stable identity between renders —
   // ExportPdfDialog's effect depends on buildDocument and would otherwise
@@ -119,28 +126,55 @@ const splitScreen = editorOpen && isDesktopEditor;
       title={editorOpen ? "Edit portfolio" : "Portfolio preview"}
       subtitle="A live developer portfolio generated from your analysed repositories. Switch templates instantly."
       action={
-        <div className="flex flex-wrap items-center gap-3">
-          <Button
-            variant="outline"
-            className="rounded-full"
-            onClick={() => {
-              setEditSession((n) => n + 1);
-              setEditorOpen(true);
-            }}
-            aria-pressed={editorOpen}
-            data-testid="edit-portfolio-btn"
-          >
-            <Pencil className="mr-2 h-4 w-4" /> Edit Portfolio
-          </Button>
-          <Button className="rounded-full" onClick={() => setPublishOpen(true)} data-testid="publish-portfolio-btn">
-            <Globe className="mr-2 h-4 w-4" /> {state.published ? "Republish" : "Publish Portfolio"}
-          </Button>
-          <Button variant="outline" className="rounded-full" onClick={() => setExportOpen(true)} data-testid="export-pdf-btn">
-            <FileDown className="mr-2 h-4 w-4" /> Export PDF
-          </Button>
-          <Link to="/job-match" className={buttonVariants({ variant: "ghost" }) + " rounded-full"} data-testid="portfolio-to-job-match-btn">
-            Optimise for a job
-          </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          {!editorOpen ? (
+            <>
+              <Button
+                variant="outline"
+                className="rounded-full"
+                onClick={() => {
+                  setEditSession((n) => n + 1);
+                  setEditorOpen(true);
+                }}
+                data-testid="edit-portfolio-btn"
+              >
+                <Pencil className="mr-2 h-4 w-4" /> Edit
+              </Button>
+              <Button className="rounded-full" onClick={() => setPublishOpen(true)} data-testid="publish-portfolio-btn">
+                <Globe className="mr-2 h-4 w-4" /> {state.published ? "Republish" : "Publish"}
+              </Button>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" className="rounded-full h-10 w-10 shrink-0">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48 rounded-xl">
+                  <DropdownMenuItem onClick={() => setExportOpen(true)} data-testid="export-pdf-menu-item" className="flex items-center gap-2 cursor-pointer">
+                    <FileDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    <span>Export PDF</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/job-match")} data-testid="portfolio-to-job-match-menu-item" className="flex items-center gap-2 w-full cursor-pointer">
+                    <Briefcase className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    <span>Optimise for a job</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : (
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => {
+                setDraft(null);
+                setEditorOpen(false);
+              }}
+              data-testid="cancel-edit-btn"
+            >
+              Cancel
+            </Button>
+          )}
         </div>
       }
     >

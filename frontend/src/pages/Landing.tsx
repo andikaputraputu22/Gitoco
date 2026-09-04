@@ -288,7 +288,7 @@ export default function Landing(): React.ReactElement {
                 credible portfolios and giving hiring teams clearer context.
               </p>
             </div>
-            <Link to="/dashboard" className={buttonVariants({ variant: "outline" }) + " rounded-full"} data-testid="features-cta-btn">
+            <Link to="/dashboard" className={buttonVariants({ variant: "outline" }) + sec} data-testid="features-cta-btn">
               Try the demo <ArrowRight className="ml-1.5 h-4 w-4" />
             </Link>
           </div>
@@ -420,21 +420,25 @@ export default function Landing(): React.ReactElement {
             </p>
           </div>
 
-          <div className="mt-12 grid gap-3 lg:grid-cols-2">
-            {FAQS.map((item, i) => (
-              <details
-                key={item.q}
-                className="group rounded-2xl border border-border bg-card px-5 py-4 transition-colors duration-200 hover:border-foreground/20"
-                data-testid={`faq-item-${i + 1}`}
-              >
-                <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-[15px] font-medium [&::-webkit-details-marker]:hidden">
-                  <span>{item.q}</span>
-                  <ChevronDown className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
-                </summary>
-                <p className="mt-3 max-w-prose text-[14px] leading-relaxed text-muted-foreground" data-testid={`faq-answer-${i + 1}`}>
-                  {item.a}
-                </p>
-              </details>
+          <div className="mt-12 grid gap-3 lg:grid-cols-2 lg:items-start">
+            {[0, 1].map((colIndex) => (
+              <div key={colIndex} className="flex flex-col gap-3">
+                {FAQS.filter((_, i) => i % 2 === colIndex).map((item, i) => (
+                  <details
+                    key={item.q}
+                    className="group rounded-2xl border border-border bg-card px-5 py-4 transition-colors duration-200 hover:border-foreground/20"
+                    data-testid={`faq-item-${colIndex}-${i + 1}`}
+                  >
+                    <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-[15px] font-medium [&::-webkit-details-marker]:hidden">
+                      <span>{item.q}</span>
+                      <ChevronDown className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
+                    </summary>
+                    <p className="mt-3 max-w-prose text-[14px] leading-relaxed text-muted-foreground" data-testid={`faq-answer-${colIndex}-${i + 1}`}>
+                      {item.a}
+                    </p>
+                  </details>
+                ))}
+              </div>
             ))}
           </div>
         </div>
