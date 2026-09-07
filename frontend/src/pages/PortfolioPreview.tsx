@@ -260,7 +260,7 @@ const splitScreen = editorOpen && isDesktopEditor;
         </span>
       </div>
 
-      <div className={cn("overflow-hidden rounded-2xl border border-border shadow-2xl", splitScreen && "flex min-h-0 flex-1 flex-col")}>
+      <div className={cn("overflow-hidden rounded-2xl border border-border bg-card", splitScreen && "flex min-h-0 flex-1 flex-col")}>
         <div className="flex items-center gap-2 border-b border-border bg-card px-4 py-3">
           <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#FEBC2E]" />

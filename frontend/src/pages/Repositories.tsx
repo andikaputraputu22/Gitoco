@@ -78,10 +78,10 @@ export default function Repositories(): React.ReactElement {
               data-testid={`repo-card-${repo.id}`}
               aria-pressed={checked}
               className={cn(
-                "group relative w-full rounded-2xl border bg-card p-6 text-left transition-[border-color,box-shadow,transform] duration-200",
+                "group relative w-full rounded-2xl border bg-card p-6 text-left transition-colors duration-150",
                 checked
-                  ? "border-primary shadow-[0_10px_36px_-20px_var(--primary)]"
-                  : "border-border hover:border-primary/50 hover:-translate-y-0.5",
+                  ? "border-primary bg-primary/[0.02]"
+                  : "border-border hover:border-foreground/25",
               )}
             >
               <div className="flex items-start gap-4">

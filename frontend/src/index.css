@@ -155,14 +155,12 @@
     background-color: color-mix(in oklab, var(--background) 72%, transparent);
   }
   .card-hover {
-    transition-property: border-color, box-shadow, transform;
-    transition-duration: 220ms;
-    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transition-property: border-color;
+    transition-duration: 180ms;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
   .card-hover:hover {
-    border-color: var(--primary);
-    box-shadow: 0 12px 40px -18px color-mix(in oklab, var(--primary) 65%, transparent);
-    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--primary) 50%, var(--border));
   }
   ::selection {
     background-color: color-mix(in oklab, var(--primary) 30%, transparent);

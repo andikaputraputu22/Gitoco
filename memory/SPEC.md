@@ -5,7 +5,7 @@ Contest prototype. "Turn your GitHub into a professional developer portfolio."
 ## Stack / architecture
 - Frontend-only product logic (user choice): all repo + AI data is **mocked** in `frontend/src/lib/mock.ts`.
 - App state persists to `localStorage` key `gitfolio.state.v1` via `frontend/src/lib/store.tsx` (`AppStateProvider` / `useApp`).
-- Theme: `frontend/src/lib/theme.ts`, `localStorage` key `gitfolio.theme` (internal key, unchanged), default **light** for a new visitor; OS preference is deliberately ignored; a stored choice always wins. Toggles `.dark` on `<html>`.
+- Theme: `frontend/src/lib/theme.ts`, `localStorage` key `gitfolio.theme` (internal key, unchanged), default **dark** for a new visitor; OS preference is deliberately ignored; a stored choice always wins. Toggles `.dark` on `<html>`.
 - Backend is the untouched template skeleton (`/api/`, `/api/status`). No app endpoints — nothing in the UI calls the API.
 - No auth. "Sign In" / "Get Started" go straight to `/dashboard`.
 
